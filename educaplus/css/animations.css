@@ -250,49 +250,49 @@
 
 /* Fade Classes */
 .animate-fadeIn {
-  animation: fadeIn var(--transition-slow) var(--ease-out) forwards;
+  animation: fadeIn 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-fadeInUp {
-  animation: fadeInUp var(--transition-slow) var(--ease-out) forwards;
+  animation: fadeInUp 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-fadeInDown {
-  animation: fadeInDown var(--transition-slow) var(--ease-out) forwards;
+  animation: fadeInDown 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-fadeInLeft {
-  animation: fadeInLeft var(--transition-slow) var(--ease-out) forwards;
+  animation: fadeInLeft 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-fadeInRight {
-  animation: fadeInRight var(--transition-slow) var(--ease-out) forwards;
+  animation: fadeInRight 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 /* Scale Classes */
 .animate-scaleIn {
-  animation: scaleIn var(--transition-slow) var(--ease-out) forwards;
+  animation: scaleIn 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-scaleInBounce {
-  animation: scaleInBounce 0.4s var(--ease-bounce) forwards;
+  animation: scaleInBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
 /* Slide Classes */
 .animate-slideInLeft {
-  animation: slideInLeft var(--transition-slow) var(--ease-out) forwards;
+  animation: slideInLeft 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-slideInRight {
-  animation: slideInRight var(--transition-slow) var(--ease-out) forwards;
+  animation: slideInRight 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-slideInUp {
-  animation: slideInUp var(--transition-slow) var(--ease-out) forwards;
+  animation: slideInUp 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .animate-slideInDown {
-  animation: slideInDown var(--transition-slow) var(--ease-out) forwards;
+  animation: slideInDown 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 /* Utility Classes */
@@ -327,7 +327,7 @@
 /* ========== STAGGERED ANIMATIONS ========== */
 .stagger-children > * {
   opacity: 0;
-  animation: fadeInUp var(--transition-slow) var(--ease-out) forwards;
+  animation: fadeInUp 0.3s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
@@ -345,8 +345,8 @@
 
 /* Lift Effect */
 .hover-lift {
-  transition: transform var(--transition-base) var(--ease-out),
-              box-shadow var(--transition-base) var(--ease-out);
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .hover-lift:hover {
@@ -356,7 +356,7 @@
 
 /* Scale Effect */
 .hover-scale {
-  transition: transform var(--transition-base) var(--ease-out);
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .hover-scale:hover {
@@ -365,7 +365,7 @@
 
 /* Glow Effect */
 .hover-glow {
-  transition: box-shadow var(--transition-base) var(--ease-out);
+  transition: box-shadow 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .hover-glow:hover {
@@ -375,7 +375,7 @@
 /* Border Glow Effect */
 .hover-borderGlow {
   position: relative;
-  transition: border-color var(--transition-base) var(--ease-out);
+  transition: border-color 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .hover-borderGlow::before {
@@ -390,7 +390,7 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity var(--transition-base) var(--ease-out);
+  transition: opacity 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .hover-borderGlow:hover::before {
@@ -407,9 +407,9 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--accent-primary-light) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
   opacity: 0;
-  transition: opacity var(--transition-base) var(--ease-out);
+  transition: opacity 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .hover-bgShift:hover::before {
@@ -487,8 +487,8 @@
 .page-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity var(--transition-slow) var(--ease-out),
-              transform var(--transition-slow) var(--ease-out);
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .page-exit {
@@ -499,8 +499,8 @@
 .page-exit-active {
   opacity: 0;
   transform: translateY(-20px);
-  transition: opacity var(--transition-slow) var(--ease-out),
-              transform var(--transition-slow) var(--ease-out);
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* ========== MODAL ANIMATIONS ========== */
@@ -510,7 +510,7 @@
 
 .modal-backdrop-enter-active {
   opacity: 1;
-  transition: opacity var(--transition-base) var(--ease-out);
+  transition: opacity 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .modal-backdrop-exit {
@@ -519,7 +519,7 @@
 
 .modal-backdrop-exit-active {
   opacity: 0;
-  transition: opacity var(--transition-base) var(--ease-out);
+  transition: opacity 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .modal-content-enter {
@@ -530,8 +530,8 @@
 .modal-content-enter-active {
   opacity: 1;
   transform: scale(1) translateY(0);
-  transition: opacity var(--transition-slow) var(--ease-out),
-              transform var(--transition-slow) var(--ease-out);
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .modal-content-exit {
@@ -542,8 +542,8 @@
 .modal-content-exit-active {
   opacity: 0;
   transform: scale(0.95) translateY(20px);
-  transition: opacity var(--transition-base) var(--ease-out),
-              transform var(--transition-base) var(--ease-out);
+  transition: opacity 0.2s cubic-bezier(0, 0, 0.2, 1),
+              transform 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* ========== NOTIFICATION ANIMATIONS ========== */
@@ -555,7 +555,7 @@
 .notification-enter-active {
   opacity: 1;
   transform: translateX(0);
-  transition: all var(--transition-slow) var(--ease-out);
+  transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
 .notification-exit {
@@ -566,7 +566,7 @@
 .notification-exit-active {
   opacity: 0;
   transform: translateX(100%);
-  transition: all var(--transition-base) var(--ease-out);
+  transition: all 0.2s cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* ========== RIPPLE EFFECT ========== */
@@ -599,7 +599,7 @@
 
 /* ========== COUNTER ANIMATION ========== */
 .counter {
-  transition: all var(--transition-slow) var(--ease-out);
+  transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* ========== PROGRESS BAR ANIMATION ========== */
