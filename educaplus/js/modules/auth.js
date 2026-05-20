@@ -314,7 +314,7 @@ function toggleAuthMode() {
             loginForm.style.display = 'none';
             registerForm.style.display = 'block';
             if (title) title.textContent = 'Crear cuenta';
-            if (subtitle) subtitle.textContent = 'Únete a Educa+ hoy';
+            if (subtitle) subtitle.textContent = 'Únete a Web 4 ESO hoy';
             if (toggleText) toggleText.textContent = '¿Ya tienes cuenta?';
             if (toggleLink) toggleLink.textContent = 'Inicia sesión';
         }

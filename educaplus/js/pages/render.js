@@ -4,6 +4,56 @@
    ============================================ */
 
 // ============================================
+// GLOBAL FILE HELPERS
+// ============================================
+
+window.openFile = function(url, filename) {
+    console.log('Abriendo archivo:', url);
+    if (!url) { window.Utils.showNotification('❌ Archivo sin URL', 'error'); return; }
+    
+    var newWin = window.open('', '_blank');
+    if (!newWin) { window.Utils.showNotification('⚠️ Permite ventanas emergentes', 'error'); return; }
+    
+    newWin.document.write('<html><head><title>Cargando...</title><style>body{background:#0f1115;color:#fff;display:flex;align-items:center;justify-content:center;font-family:sans-serif;}</style></head><body><p>Cargando archivo...</p></body></html>');
+    
+    fetch(url)
+        .then(function(r) { return r.blob(); })
+        .then(function(blob) {
+            var type = (filename && filename.toLowerCase().endsWith('.pdf')) ? 'application/pdf' : blob.type;
+            var fixed = new Blob([blob], { type: type });
+            newWin.location.href = URL.createObjectURL(fixed);
+        })
+        .catch(function(err) {
+            console.error(err);
+            newWin.document.write('<html><head><title>Error</title><style>body{background:#0f1115;color:#fff;display:flex;align-items:center;justify-content:center;font-family:sans-serif;}</style></head><body><p>Error al cargar el archivo: ' + err.message + '</p></body></html>');
+        });
+};
+
+window.downloadFile = function(url, filename) {
+    console.log('Descargando archivo:', url);
+    if (!url) { window.Utils.showNotification('❌ Archivo sin URL', 'error'); return; }
+    
+    fetch(url)
+        .then(function(r) { return r.blob(); })
+        .then(function(blob) {
+            var type = (filename && filename.toLowerCase().endsWith('.pdf')) ? 'application/pdf' : blob.type;
+            var fixed = new Blob([blob], { type: type });
+            var blobUrl = URL.createObjectURL(fixed);
+            var a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename || 'archivo';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(function() { URL.revokeObjectURL(blobUrl); }, 10000);
+        })
+        .catch(function(err) {
+            console.error(err);
+            window.Utils.showNotification('❌ Error al descargar: ' + err.message, 'error');
+        });
+};
+
+// ============================================
 // DASHBOARD RENDER FUNCTIONS
 // ============================================
 
@@ -46,15 +96,8 @@ function renderStats() {
             <div class="stat-card-header">
                 <div class="stat-card-icon info">${window.UIModule.getIcon('fileText', 24)}</div>
             </div>
-            <div class="stat-card-value">${window.dashboardState.allFiles.length}</div>
+            <div class="stat-card-value">${totalSubjectFiles}</div>
             <div class="stat-card-label">Archivos</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-card-header">
-                <div class="stat-card-icon warning">${window.UIModule.getIcon('clock', 24)}</div>
-            </div>
-            <div class="stat-card-value">${window.dashboardState.recentFiles.length}</div>
-            <div class="stat-card-label">Recientes</div>
         </div>
     `;
 }
@@ -146,8 +189,8 @@ function renderRecentFiles() {
                     <div class="file-row-meta">${window.Utils.formatDate(f.created_at)}</div>
                 </div>
                 <div class="file-row-actions">
-                    <a href="${f.file_url}" target="_blank" class="file-action-btn" title="Ver archivo">${window.UIModule.getIcon('externalLink', 16)}</a>
-                    <button class="file-action-btn" onclick="window.downloadFile && window.downloadFile('${f.file_url}', '${window.Utils.escapeHtml(f.file_name)}')" title="Descargar">${window.UIModule.getIcon('download', 16)}</button>
+                    <a href="${window.Utils.escapeHtml(f.file_url)}" target="_blank" class="file-action-btn" title="Ver archivo">${window.UIModule.getIcon('externalLink', 16)}</a>
+                    <button class="file-action-btn" onclick="window.downloadFileCloudinary && window.downloadFileCloudinary('${window.Utils.escapeHtml(f.file_url).replace(/'/g, "\\'")}', '${window.Utils.escapeHtml(f.file_name).replace(/'/g, "\\'")}')" title="Descargar">${window.UIModule.getIcon('download', 16)}</button>
                 </div>
             </div>
         `;
@@ -172,7 +215,7 @@ function renderRecommendations() {
     for (var i = 0; i < window.dashboardState.recommendations.length; i++) {
         var r = window.dashboardState.recommendations[i];
         recsHtml += `
-            <div class="recommendation-item" ${r.url ? 'onclick="window.open(\'' + r.url + '\', \'_blank\')" style="cursor: pointer;"' : ''}>
+            <div class="recommendation-item" ${r.url ? 'onclick="window.open(\'' + r.url.replace(/'/g, "\\'") + '\', \'_blank\')" style="cursor: pointer;"' : ''}>
                 <div class="recommendation-icon">${window.UIModule.getIcon('lightbulb', 16)}</div>
                 <div class="recommendation-title">${window.Utils.escapeHtml(r.title)}</div>
                 ${r.description ? '<div class="recommendation-description">' + window.Utils.escapeHtml(r.description) + '</div>' : ''}
@@ -180,15 +223,6 @@ function renderRecommendations() {
         `;
     }
     container.innerHTML = recsHtml;
-}
-
-function downloadFile(url, filename) {
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.target = '_blank';
-    a.click();
-    a.remove();
 }
 
 // ============================================
@@ -292,7 +326,6 @@ function renderTopicsList() {
         return;
     }
     
-    // Separar temas pineados y no pineados
     var pinnedTopics = [];
     var unpinnedTopics = [];
     for (var i = 0; i < topics.length; i++) {
@@ -319,30 +352,26 @@ function renderTopicsList() {
                             ${topic.is_pinned ? '<span style="font-size: 14px;">📍</span>' : ''}
                             <h3 style="margin: 0;">${window.Utils.escapeHtml(topic.title)}</h3>
                         </div>
+                        ${topic.description ? '<p style="font-size: var(--text-sm); color: var(--text-secondary); margin-top: 4px;">' + window.Utils.escapeHtml(topic.description) + '</p>' : ''}
                         <div class="topic-meta">
                             <span>${window.UIModule.getIcon('fileText', 14)} ${files.length} archivos</span>
                             <span>${window.UIModule.getIcon('messageCircle', 14)} ${topicComments.length} comentarios</span>
+                            <span>${window.UIModule.getIcon('lightbulb', 14)} ${(topic.recommendations || []).length} recursos</span>
                         </div>
                     </div>
                     ${isAdmin ? `
                         <div class="topic-actions" onclick="event.stopPropagation()">
-                            <button class="btn btn-ghost btn-icon" onclick="window.FilesModule && window.FilesModule.showUploadModal && window.FilesModule.showUploadModal('${topic.id}')" title="Subir archivo">
-                                ${window.UIModule.getIcon('upload', 18)}
-                            </button>
-                            <button class="btn btn-ghost btn-icon" onclick="window.TopicsModule && window.TopicsModule.showEditModal && window.TopicsModule.showEditModal('${topic.id}', '${window.Utils.escapeHtml(topic.title)}', '${window.Utils.escapeHtml(topic.description || '')}')" title="Editar tema">
-                                ${window.UIModule.getIcon('edit', 18)}
-                            </button>
-                            <button class="btn btn-ghost btn-icon" onclick="window.TopicsModule && window.TopicsModule.togglePin && window.TopicsModule.togglePin('${topic.id}', ${topic.is_pinned || false})" title="${topic.is_pinned ? 'Desanclar' : 'Anclar al inicio'}" style="color: ${topic.is_pinned ? 'var(--warning)' : 'var(--text-secondary)'}">
-                                📌
-                            </button>
-                            <button class="btn btn-ghost btn-icon" onclick="window.TopicsModule && window.TopicsModule.delete && window.TopicsModule.delete('${topic.id}', '${window.Utils.escapeHtml(topic.title)}')" title="Eliminar tema" style="color:var(--error)">
-                                ${window.UIModule.getIcon('trash', 18)}
-                            </button>
+                            <button class="btn btn-ghost btn-icon" onclick="window.FilesModule.showUploadModal('${topic.id}')" title="Subir archivo">${window.UIModule.getIcon('upload', 18)}</button>
+                            <button class="btn btn-ghost btn-icon" onclick="window.TopicsModule.showEditModal('${topic.id}', '${window.Utils.escapeHtml(topic.title)}', '${window.Utils.escapeHtml(topic.description || '')}')" title="Editar tema">${window.UIModule.getIcon('edit', 18)}</button>
+                            <button class="btn btn-ghost btn-icon" onclick="window.RecommendationsModule.showCreateModal && window.RecommendationsModule.showCreateModal('${topic.id}')" title="Agregar recurso" style="color:var(--warning)">💡</button>
+                            <button class="btn btn-ghost btn-icon" onclick="window.TopicsModule.togglePin('${topic.id}', ${topic.is_pinned || false})" title="${topic.is_pinned ? 'Desanclar' : 'Anclar al inicio'}" style="color: ${topic.is_pinned ? 'var(--warning)' : 'var(--text-secondary)'}">📌</button>
+                            <button class="btn btn-ghost btn-icon" onclick="window.TopicsModule.delete('${topic.id}', '${window.Utils.escapeHtml(topic.title)}')" title="Eliminar tema" style="color:var(--error)">${window.UIModule.getIcon('trash', 18)}</button>
                         </div>
                     ` : ''}
                 </div>
                 <div class="topic-content">
                     ${renderTopicFiles(files, topic.id, isAdmin)}
+                    ${renderTopicResources(topic.recommendations || [], topic.id, isAdmin)}
                     ${renderTopicComments(topicComments, topic.id, userId, isAdmin)}
                 </div>
             </div>
@@ -350,7 +379,6 @@ function renderTopicsList() {
     }
     container.innerHTML = topicsHtml;
     
-    // Instrucción para drag & drop (solo admin)
     if (isAdmin && topics.length > 1 && !document.querySelector('.drag-hint')) {
         var dragHint = document.createElement('div');
         dragHint.className = 'drag-hint';
@@ -368,25 +396,29 @@ function renderTopicFiles(files, topicId, isAdmin) {
     var filesHtml = '<div class="topic-files"><h4>📁 Archivos</h4>';
     for (var i = 0; i < files.length; i++) {
         var f = files[i];
+        var fileIcon = f.file_type === 'pdf' ? 'fileText' : (f.file_type === 'image' ? 'image' : 'file');
+        
         filesHtml += `
             <div class="topic-file">
                 <div class="topic-file-icon">
-                    ${window.UIModule.getIcon(f.file_type === 'pdf' ? 'fileText' : 'file', 20)}
+                    ${window.UIModule.getIcon(fileIcon, 20)}
                 </div>
                 <div class="topic-file-info">
                     <div class="topic-file-name">${window.Utils.escapeHtml(f.file_name)}</div>
                     <div class="topic-file-size">${window.Utils.formatFileSize(f.file_size || 0)}</div>
                 </div>
                 <div class="topic-file-actions">
-                    <a href="${f.file_url}" target="_blank" title="Ver archivo">${window.UIModule.getIcon('externalLink', 16)}</a>
-                    <button onclick="window.FilesModule && window.FilesModule.download && window.FilesModule.download('${f.file_url}', '${window.Utils.escapeHtml(f.file_name)}')" title="Descargar">
+                    <button onclick="window.openFile('${window.Utils.escapeHtml(f.file_url || '').replace(/'/g, "&#39;")}', '${window.Utils.escapeHtml(f.file_name || '').replace(/'/g, "&#39;")}')" title="Ver archivo" style="background:transparent; border:none; cursor:pointer; color:var(--accent-primary); padding:4px;">
+                        ${window.UIModule.getIcon('externalLink', 16)}
+                    </button>
+                    <button onclick="window.downloadFile('${window.Utils.escapeHtml(f.file_url || '').replace(/'/g, "&#39;")}', '${window.Utils.escapeHtml(f.file_name || '').replace(/'/g, "&#39;")}')" title="Descargar" style="background:transparent; border:none; cursor:pointer; padding:4px;">
                         ${window.UIModule.getIcon('download', 16)}
                     </button>
                     ${isAdmin ? `
-                        <button onclick="window.FilesModule && window.FilesModule.showEditModal && window.FilesModule.showEditModal('${f.id}', '${window.Utils.escapeHtml(f.file_name)}', '${topicId}')" title="Editar nombre">
+                        <button onclick="window.FilesModule.showEditModal('${f.id}', '${window.Utils.escapeHtml(f.file_name)}', '${topicId}')" title="Editar nombre" style="background:transparent; border:none; cursor:pointer; padding:4px;">
                             ${window.UIModule.getIcon('edit', 16)}
                         </button>
-                        <button onclick="window.FilesModule && window.FilesModule.delete && window.FilesModule.delete('${f.id}', '${f.file_url}')" title="Eliminar archivo" style="color:var(--error)">
+                        <button onclick="window.FilesModule.delete('${f.id}', '${window.Utils.escapeHtml(f.file_url || '')}')" title="Eliminar archivo" style="color:var(--error); background:transparent; border:none; cursor:pointer; padding:4px;">
                             ${window.UIModule.getIcon('trash', 16)}
                         </button>
                     ` : ''}
@@ -396,6 +428,37 @@ function renderTopicFiles(files, topicId, isAdmin) {
     }
     filesHtml += '</div>';
     return filesHtml;
+}
+
+function renderTopicResources(resources, topicId, isAdmin) {
+    if (!resources || resources.length === 0) return '';
+    
+    var html = '<div class="topic-files" style="margin-top:var(--space-4)"><h4>💡 Recursos de estudio</h4>';
+    for (var i = 0; i < resources.length; i++) {
+        var r = resources[i];
+        var hasUrl = r.url && r.url.startsWith('http');
+        
+        html += `
+            <div class="topic-file">
+                <div class="topic-file-icon" style="color:var(--warning)">
+                    ${window.UIModule.getIcon('link', 20)}
+                </div>
+                <div class="topic-file-info">
+                    <div class="topic-file-name">${window.Utils.escapeHtml(r.title)}</div>
+                    ${r.description ? '<div class="topic-file-size">' + window.Utils.escapeHtml(r.description) + '</div>' : ''}
+                </div>
+                <div class="topic-file-actions">
+                    ${hasUrl ? '<a href="' + window.Utils.escapeHtml(r.url) + '" target="_blank" rel="noopener" title="Abrir recurso" style="background:transparent; cursor:pointer; color:var(--accent-primary); padding:4px; text-decoration:none;">' + window.UIModule.getIcon('externalLink', 16) + '</a>' : ''}
+                    ${isAdmin ? `
+                        <button onclick="window.RecommendationsModule.showEditModal && window.RecommendationsModule.showEditModal('${r.id}', '${window.Utils.escapeHtml(r.title).replace(/'/g, "&#39;")}', '${window.Utils.escapeHtml(r.url || '').replace(/'/g, "&#39;")}', '${window.Utils.escapeHtml(r.description || '').replace(/'/g, "&#39;")}', '${topicId}')" title="Editar" style="background:transparent; border:none; cursor:pointer; padding:4px;">${window.UIModule.getIcon('edit', 16)}</button>
+                        <button onclick="window.RecommendationsModule.delete && window.RecommendationsModule.delete('${r.id}')" title="Eliminar" style="color:var(--error); background:transparent; border:none; cursor:pointer; padding:4px;">${window.UIModule.getIcon('trash', 16)}</button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+    html += '</div>';
+    return html;
 }
 
 function renderTopicComments(comments, topicId, userId, isAdmin) {
@@ -422,7 +485,7 @@ function renderTopicComments(comments, topicId, userId, isAdmin) {
                     <p style="margin-top: 4px; word-wrap: break-word;">${window.Utils.escapeHtml(c.content)}</p>
                 </div>
                 ${(c.user_id === userId || isAdmin) ? `
-                    <button onclick="window.deleteComment && window.deleteComment('${c.id}', '${topicId}')" style="color:var(--error); flex-shrink:0;" title="Eliminar comentario">
+                    <button onclick="window.deleteComment && window.deleteComment('${c.id}', '${topicId}')" style="color:var(--error); flex-shrink:0; background:transparent; border:none; cursor:pointer;" title="Eliminar comentario">
                         ${window.UIModule.getIcon('trash', 14)}
                     </button>
                 ` : ''}
@@ -453,7 +516,6 @@ window.renderStats = renderStats;
 window.renderSubjects = renderSubjects;
 window.renderRecentFiles = renderRecentFiles;
 window.renderRecommendations = renderRecommendations;
-window.downloadFile = downloadFile;
 
 // Subject functions
 window.renderSubject = renderSubject;

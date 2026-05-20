@@ -212,21 +212,18 @@ const EducaSubjectsAPI = {
         const { data: { user } } = await client.auth.getUser();
         if (!user) throw new Error('Debes iniciar sesión');
         
-        const { data, error } = await client
+        const { error } = await client
             .from('subjects')
             .update({
                 name: updates.name,
                 description: updates.description,
                 icon: updates.icon || 'bookOpen',
-                color: updates.color || '#6366f1',
-                updated_at: new Date().toISOString()
+                color: updates.color || '#6366f1'
             })
-            .eq('id', id)
-            .select()
-            .single();
+            .eq('id', id);
         
         if (error) throw error;
-        return data;
+        return true;
     },
     
     async delete(id) {
@@ -292,6 +289,25 @@ const EducaTopicsAPI = {
         const client = getEducaSupabase();
         const { error } = await client.from('topics').delete().eq('id', id);
         if (error) throw error;
+        return true;
+    },
+    
+    async reorder(orderedIds) {
+        const isAdmin = await EducaProfilesAPI.isAdmin();
+        if (!isAdmin) throw new Error('Unauthorized');
+        
+        const client = getEducaSupabase();
+        const promises = orderedIds.map(function(item) {
+            return client
+                .from('topics')
+                .update({ order_index: item.order_index })
+                .eq('id', item.id);
+        });
+        
+        const results = await Promise.all(promises);
+        for (var i = 0; i < results.length; i++) {
+            if (results[i].error) throw results[i].error;
+        }
         return true;
     }
 };
@@ -361,7 +377,7 @@ const EducaFilesAPI = {
         
         const { data, error } = await client
             .from('files')
-            .update({ file_name: newName, updated_at: new Date().toISOString() })
+            .update({ file_name: newName })
             .eq('id', fileId)
             .select()
             .single();

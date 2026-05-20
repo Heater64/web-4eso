@@ -196,7 +196,7 @@ async function updateSubject(id) {
         }
     } catch (error) {
         console.error('Error al actualizar:', error);
-        window.Utils.showNotification('❌ Error al actualizar: ' + (error.message || 'Error desconocido'), 'error');
+        window.Utils.showNotification('❌ Error al actualizar: ' + (error.message || error.error_description || JSON.stringify(error) || 'Error desconocido'), 'error');
     }
 }
 
@@ -248,7 +248,6 @@ window.showSubjectCardMenu = function(event, subjectId) {
     
     var menu = document.createElement('div');
     menu.className = 'dropdown-menu active subject-context-menu';
-    // Menú más cuadrado y compacto - ancho reducido, bordes más cuadrados
     menu.style.cssText = 'position: fixed; z-index: 1000; min-width: 100px; max-width: 120px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); opacity: 1; visibility: visible;';
     menu.innerHTML = `
         <div class="dropdown-item" data-action="edit" style="display: flex; align-items: center; gap: 6px; padding: 6px 10px; cursor: pointer; border-radius: 6px; font-size: 13px; margin: 2px 0;">

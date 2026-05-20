@@ -3,6 +3,78 @@
    Sidebar fija en desktop, hamburguesa en móvil
    ============================================ */
 
+   /* Update js/pages/dashboard/navigation.js - Fix settings save */
+function setupSettingsForm() {
+    const profileForm = document.getElementById('profile-form');
+    if (!profileForm) return;
+    
+    // Load profile data into form
+    const profile = window.dashboardState.profile;
+    if (profile) {
+        const nameInput = document.getElementById('profile-name');
+        const emailInput = document.getElementById('profile-email');
+        const roleInput = document.getElementById('profile-role');
+        const avatarInput = document.getElementById('profile-avatar');
+        
+        if (nameInput) nameInput.value = profile.name || '';
+        if (emailInput) emailInput.value = profile.email || '';
+        if (roleInput) roleInput.value = profile.role === 'admin' ? 'Administrador' : 'Estudiante';
+        if (avatarInput) avatarInput.value = profile.avatar_url || '';
+    }
+    
+    profileForm.onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('profile-name');
+        const avatarInput = document.getElementById('profile-avatar');
+        
+        const updates = {};
+        if (nameInput && nameInput.value.trim()) updates.name = nameInput.value.trim();
+        if (avatarInput && avatarInput.value.trim()) updates.avatar_url = avatarInput.value.trim();
+        
+        if (Object.keys(updates).length === 0) {
+            window.Utils.showNotification('No hay cambios para guardar', 'info');
+            return;
+        }
+        
+        try {
+            const client = window.EducaSupabase.getClient();
+            const { error } = await client
+                .from('profiles')
+                .update({ ...updates, updated_at: new Date().toISOString() })
+                .eq('id', window.dashboardState.profile.id);
+            
+            if (error) throw error;
+            
+            // Update local state
+            Object.assign(window.dashboardState.profile, updates);
+            
+            // Update UI
+            const sidebarUserName = document.getElementById('sidebar-user-name');
+            const topbarUserName = document.getElementById('topbar-user-name');
+            if (sidebarUserName && updates.name) sidebarUserName.innerText = updates.name;
+            if (topbarUserName && updates.name) topbarUserName.innerText = updates.name;
+            
+            // Update avatar initials if name changed
+            if (updates.name) {
+                const initial = updates.name.charAt(0).toUpperCase();
+                const avatarElements = ['sidebar-user-avatar', 'topbar-user-avatar'];
+                avatarElements.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && !window.dashboardState.profile.avatar_url) el.innerText = initial;
+                });
+            }
+            
+            window.Utils.showNotification('✅ Perfil actualizado correctamente');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            window.Utils.showNotification('❌ Error al actualizar el perfil', 'error');
+        }
+    };
+}
+
+// Add to navigation.js or include in main dashboard init
+
 function setupNavigation() {
     const menuBtn = document.getElementById('menu-btn');
     const sidebar = document.getElementById('sidebar');

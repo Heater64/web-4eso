@@ -1,6 +1,6 @@
 /* ============================================
    EDUCA+ - Topics Module
-   CRUD completo + Pin (SIN Drag & Drop)
+   CRUD completo + Pin + Drag & Drop
    ============================================ */
 
 const TopicsModule = {
@@ -176,6 +176,92 @@ const TopicsModule = {
         } catch (error) {
             console.error('Error al cambiar pin:', error);
             window.Utils.showNotification('❌ Error al cambiar estado', 'error');
+        }
+    },
+    
+    initDragAndDrop: function() {
+        var container = document.getElementById('topics-list');
+        if (!container) return;
+        
+        var items = container.querySelectorAll('.topic-item[draggable="true"]');
+        if (items.length < 2) return;
+        
+        var draggedId = null;
+        
+        function handleDragStart(e) {
+            draggedId = this.getAttribute('data-topic-id');
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedId);
+        }
+        
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            var drops = container.querySelectorAll('.topic-item.drag-over');
+            for (var i = 0; i < drops.length; i++) {
+                drops[i].classList.remove('drag-over');
+            }
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            var item = e.currentTarget;
+            if (item.getAttribute('data-topic-id') !== draggedId) {
+                item.classList.add('drag-over');
+            }
+        }
+        
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            this.classList.remove('drag-over');
+            
+            var fromId = e.dataTransfer.getData('text/plain');
+            var toId = this.getAttribute('data-topic-id');
+            if (!fromId || fromId === toId) return;
+            
+            var fromItem = container.querySelector('.topic-item[data-topic-id="' + fromId + '"]');
+            var toItem = container.querySelector('.topic-item[data-topic-id="' + toId + '"]');
+            if (!fromItem || !toItem) return;
+            
+            var parent = container;
+            var siblings = Array.from(parent.querySelectorAll('.topic-item'));
+            var fromIndex = siblings.indexOf(fromItem);
+            var toIndex = siblings.indexOf(toItem);
+            
+            if (fromIndex < toIndex) {
+                toItem.parentNode.insertBefore(fromItem, toItem.nextSibling);
+            } else {
+                toItem.parentNode.insertBefore(fromItem, toItem);
+            }
+            
+            var allItems = parent.querySelectorAll('.topic-item');
+            var order = [];
+            for (var i = 0; i < allItems.length; i++) {
+                var id = allItems[i].getAttribute('data-topic-id');
+                order.push({ id: id, order_index: i });
+            }
+            
+            window.EducaSupabase.Topics.reorder(order).catch(function(err) {
+                console.error('Error saving order:', err);
+                window.Utils.showNotification('❌ Error al guardar el orden', 'error');
+                if (typeof window.refreshSubject === 'function') {
+                    window.refreshSubject();
+                }
+            });
+        }
+        
+        for (var i = 0; i < items.length; i++) {
+            items[i].addEventListener('dragstart', handleDragStart);
+            items[i].addEventListener('dragend', handleDragEnd);
+            items[i].addEventListener('dragover', handleDragOver);
+            items[i].addEventListener('dragleave', handleDragLeave);
+            items[i].addEventListener('drop', handleDrop);
         }
     }
 };

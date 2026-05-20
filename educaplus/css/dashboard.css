@@ -1326,6 +1326,10 @@
   opacity: 0.5;
 }
 
+.topic-item.drag-over {
+  border-top: 2px solid var(--accent-primary);
+}
+
 /* ========== MODAL ========== */
 
 .form-grid {

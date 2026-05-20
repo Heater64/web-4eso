@@ -3,15 +3,15 @@
    ============================================ */
 
 function toggleTopic(id) {
-    var element = document.querySelector('.topic-item[data-topic-id="' + id + '"]');
+    const element = document.querySelector('.topic-item[data-topic-id="' + id + '"]');
     if (element) element.classList.toggle('expanded');
 }
 
 async function addComment(topicId) {
-    var input = document.getElementById('comment-input-' + topicId);
+    const input = document.getElementById('comment-input-' + topicId);
     if (!input) return;
     
-    var content = input.value.trim();
+    const content = input.value.trim();
     if (!content) {
         window.Utils.showNotification('✏️ Escribe un comentario antes de enviar', 'error');
         return;
@@ -25,9 +25,12 @@ async function addComment(topicId) {
         });
         
         window.subjectData.comments[topicId] = await window.EducaSupabase.Comments.getByTopic(topicId);
-        renderTopicsList();
-        window.Utils.showNotification('💬 Comentario agregado');
         
+        if (typeof window.renderTopicsList === 'function') {
+            window.renderTopicsList();
+        }
+        
+        window.Utils.showNotification('💬 Comentario agregado');
         input.value = '';
     } catch (error) {
         console.error(error);
@@ -40,7 +43,11 @@ async function deleteComment(commentId, topicId) {
         try {
             await window.EducaSupabase.Comments.delete(commentId);
             window.subjectData.comments[topicId] = await window.EducaSupabase.Comments.getByTopic(topicId);
-            renderTopicsList();
+            
+            if (typeof window.renderTopicsList === 'function') {
+                window.renderTopicsList();
+            }
+            
             window.Utils.showNotification('🗑️ Comentario eliminado');
         } catch (error) {
             console.error(error);
@@ -50,9 +57,9 @@ async function deleteComment(commentId, topicId) {
 }
 
 function setupSubjectEvents() {
-    var client = window.EducaSupabase.getClient();
+    const client = window.EducaSupabase.getClient();
     
-    var logoutBtn = document.getElementById('logout-btn');
+    const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.onclick = function() {
             client.auth.signOut().then(function() {
@@ -61,9 +68,9 @@ function setupSubjectEvents() {
         };
     }
     
-    var menuBtn = document.getElementById('menu-btn');
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('sidebar-overlay');
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
     
     if (menuBtn && sidebar && overlay) {
         menuBtn.onclick = function() {
@@ -77,13 +84,13 @@ function setupSubjectEvents() {
         });
     }
     
-    var expandAllBtn = document.getElementById('expand-all-btn');
-    var collapseAllBtn = document.getElementById('collapse-all-btn');
+    const expandAllBtn = document.getElementById('expand-all-btn');
+    const collapseAllBtn = document.getElementById('collapse-all-btn');
     
     if (expandAllBtn) {
         expandAllBtn.onclick = function() {
-            var topics = document.querySelectorAll('.topic-item');
-            for (var i = 0; i < topics.length; i++) {
+            const topics = document.querySelectorAll('.topic-item');
+            for (let i = 0; i < topics.length; i++) {
                 topics[i].classList.add('expanded');
             }
         };
@@ -91,16 +98,15 @@ function setupSubjectEvents() {
     
     if (collapseAllBtn) {
         collapseAllBtn.onclick = function() {
-            var topics = document.querySelectorAll('.topic-item');
-            for (var i = 0; i < topics.length; i++) {
+            const topics = document.querySelectorAll('.topic-item');
+            for (let i = 0; i < topics.length; i++) {
                 topics[i].classList.remove('expanded');
             }
         };
     }
     
-    var dashboardLink = document.getElementById('dashboard-nav-link');
-    var subjectsLink = document.getElementById('subjects-nav-link');
-    var settingsLink = document.getElementById('settings-nav-link');
+    const dashboardLink = document.getElementById('dashboard-nav-link');
+    const subjectsLink = document.getElementById('subjects-nav-link');
     
     if (dashboardLink) {
         dashboardLink.addEventListener('click', function(e) {
@@ -116,16 +122,12 @@ function setupSubjectEvents() {
         });
     }
     
-    if (settingsLink) {
-        settingsLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            window.location.href = 'dashboard.html?view=settings';
-        });
-    }
-    
-    var addTopicBtn = document.getElementById('add-topic-btn');
+    const addTopicBtn = document.getElementById('add-topic-btn');
     if (addTopicBtn && window.TopicsModule && window.subjectData.current) {
-        addTopicBtn.onclick = function() {
+        // Remove existing listeners
+        const newBtn = addTopicBtn.cloneNode(true);
+        addTopicBtn.parentNode.replaceChild(newBtn, addTopicBtn);
+        newBtn.onclick = function() {
             window.TopicsModule.init(window.subjectData.current.id);
             window.TopicsModule.showCreateModal();
         };
@@ -133,8 +135,8 @@ function setupSubjectEvents() {
 }
 
 function closeMobileSidebar() {
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('sidebar-overlay');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
     
     if (window.innerWidth <= 768) {
         if (sidebar) sidebar.classList.remove('open');
@@ -142,6 +144,7 @@ function closeMobileSidebar() {
     }
 }
 
+// Export global functions
 window.toggleTopic = toggleTopic;
 window.addComment = addComment;
 window.deleteComment = deleteComment;

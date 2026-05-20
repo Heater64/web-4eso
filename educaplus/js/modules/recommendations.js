@@ -61,8 +61,8 @@ const RecommendationsModule = {
             window.UIModule.closeModal();
             window.Utils.showNotification('✅ Recomendación agregada correctamente');
             
-            if (typeof refreshSubject === 'function') {
-                await refreshSubject();
+            if (typeof window.refreshSubject === 'function') {
+                await window.refreshSubject();
             } else {
                 window.location.reload();
             }
@@ -124,8 +124,8 @@ const RecommendationsModule = {
             window.UIModule.closeModal();
             window.Utils.showNotification('✅ Recomendación actualizada correctamente');
             
-            if (typeof refreshSubject === 'function') {
-                await refreshSubject();
+            if (typeof window.refreshSubject === 'function') {
+                await window.refreshSubject();
             } else {
                 window.location.reload();
             }
@@ -141,8 +141,8 @@ const RecommendationsModule = {
                 await window.EducaSupabase.Recommendations.delete(recId);
                 window.Utils.showNotification('🗑️ Recomendación eliminada correctamente');
                 
-                if (typeof refreshSubject === 'function') {
-                    await refreshSubject();
+                if (typeof window.refreshSubject === 'function') {
+                    await window.refreshSubject();
                 } else {
                     window.location.reload();
                 }

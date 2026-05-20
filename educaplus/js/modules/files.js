@@ -1,6 +1,5 @@
 /* ============================================
    EDUCA+ - Files Module con Cloudinary
-   Subida directa a Cloudinary, metadatos en Supabase
    ============================================ */
 
 const FilesModule = {
@@ -20,14 +19,10 @@ const FilesModule = {
                         <p class="dropzone-hint">Imágenes, PDFs o videos (max 10MB)</p>
                     </div>
                 </div>
-                <div id="file-preview" style="margin-top: var(--space-4);"></div>
             `,
-            footer: `
-                <button class="btn btn-secondary" onclick="window.UIModule.closeModal()">Cancelar</button>
-            `
+            footer: '<button class="btn btn-secondary" onclick="window.UIModule.closeModal()">Cancelar</button>'
         });
         
-        // Esperar a que Cloudinary esté disponible
         var checkCloudinary = setInterval(function() {
             if (typeof cloudinary !== 'undefined') {
                 clearInterval(checkCloudinary);
@@ -36,11 +31,10 @@ const FilesModule = {
             }
         }, 100);
         
-        // Timeout después de 5 segundos
         setTimeout(function() {
             if (typeof cloudinary === 'undefined') {
                 clearInterval(checkCloudinary);
-                window.Utils.showNotification('❌ Error: Servicio de subida no disponible. Recarga la página.', 'error');
+                window.Utils.showNotification('❌ Servicio de subida no disponible', 'error');
             }
         }, 5000);
     },
@@ -58,10 +52,9 @@ const FilesModule = {
                 sources: ['local', 'camera', 'url'],
                 multiple: false,
                 cropping: false,
-                showCompletedButton: true,
-                showUploadMoreButton: false,
                 maxFileSize: 10485760,
-                clientAllowedFormats: ['image/*', 'application/pdf', 'video/*'],
+                clientAllowedFormats: ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'mp4'],
+                resourceType: 'auto',
                 styles: {
                     palette: {
                         window: '#0f1115',
@@ -78,35 +71,51 @@ const FilesModule = {
     
     handleCloudinaryUpload: function(error, result) {
         if (error) {
-            console.error('Error en Cloudinary:', error);
-            window.Utils.showNotification('❌ Error al subir el archivo', 'error');
+            console.error('Error:', error);
+            window.Utils.showNotification('❌ Error al subir', 'error');
             return;
         }
         
         if (result && result.event === 'success') {
             var fileInfo = result.info;
-            console.log('Archivo subido a Cloudinary:', fileInfo);
+            console.log('✅ Subido a Cloudinary:', fileInfo);
             
             var fileType = 'other';
-            if (fileInfo.resource_type === 'image') fileType = 'image';
-            else if (fileInfo.resource_type === 'video') fileType = 'video';
-            else if (fileInfo.original_filename && fileInfo.original_filename.toLowerCase().endsWith('.pdf')) fileType = 'pdf';
+            var fileUrl = fileInfo.secure_url;
+            
+            if (fileInfo.resource_type === 'image') {
+                fileType = 'image';
+            } else if (fileInfo.resource_type === 'video') {
+                fileType = 'video';
+            }
+            
+            if (fileInfo.format === 'pdf' || (fileInfo.original_filename && fileInfo.original_filename.toLowerCase().endsWith('.pdf'))) {
+                fileType = 'pdf';
+                if (fileUrl.includes('/image/upload/')) {
+                    fileUrl = fileUrl.replace('/image/upload/', '/raw/upload/');
+                    console.log('URL corregida para PDF:', fileUrl);
+                }
+            }
+            
+            var fileName = fileInfo.original_filename;
+            if (fileInfo.format && !fileName.toLowerCase().endsWith('.' + fileInfo.format)) {
+                fileName = fileName + '.' + fileInfo.format;
+            }
             
             this.saveFileToSupabase({
                 topic_id: this.currentTopicId,
-                file_name: fileInfo.original_filename,
-                file_url: fileInfo.secure_url,
+                file_name: fileName,
+                file_url: fileUrl,
                 file_type: fileType,
                 file_size: fileInfo.bytes
             });
-        } else if (result && result.event === 'close') {
-            console.log('Widget de Cloudinary cerrado');
         }
     },
     
     saveFileToSupabase: async function(fileData) {
         try {
             var result = await window.EducaSupabase.Files.create(fileData);
+            console.log('✅ Guardado en Supabase:', result);
             
             window.UIModule.closeModal();
             window.Utils.showNotification('✅ Archivo subido correctamente');
@@ -115,8 +124,8 @@ const FilesModule = {
                 await window.refreshSubject();
             }
         } catch (error) {
-            console.error('Error al guardar en Supabase:', error);
-            window.Utils.showNotification('❌ Error al guardar la información del archivo', 'error');
+            console.error('Error:', error);
+            window.Utils.showNotification('❌ Error al guardar', 'error');
         }
     },
     
@@ -124,16 +133,7 @@ const FilesModule = {
         var dropzone = document.getElementById('cloudinary-dropzone');
         if (dropzone) {
             dropzone.onclick = function() {
-                if (FilesModule.cloudinaryWidget) {
-                    FilesModule.cloudinaryWidget.open();
-                } else {
-                    window.Utils.showNotification('Inicializando cargador...', 'info');
-                    setTimeout(function() {
-                        if (FilesModule.cloudinaryWidget) {
-                            FilesModule.cloudinaryWidget.open();
-                        }
-                    }, 500);
-                }
+                FilesModule.cloudinaryWidget.open();
             };
         }
     },
@@ -141,76 +141,44 @@ const FilesModule = {
     showEditModal: function(fileId, fileName, topicId) {
         window.UIModule.showModal({
             title: '✏️ Editar Archivo',
-            content: `
-                <div class="input-group">
-                    <label class="input-label">Nombre del archivo</label>
-                    <input type="text" class="input" id="edit-file-name" value="${window.Utils.escapeHtml(fileName)}">
-                </div>
-            `,
-            footer: `
-                <button class="btn btn-secondary" onclick="window.UIModule.closeModal()">Cancelar</button>
-                <button class="btn btn-primary" id="confirm-edit-file">Guardar Cambios</button>
-            `
+            content: '<div class="input-group"><label class="input-label">Nombre</label><input type="text" class="input" id="edit-file-name" value="' + window.Utils.escapeHtml(fileName) + '"></div>',
+            footer: '<button class="btn btn-secondary" onclick="window.UIModule.closeModal()">Cancelar</button><button class="btn btn-primary" id="confirm-edit-file">Guardar</button>'
         });
         
         setTimeout(function() {
-            var confirmBtn = document.getElementById('confirm-edit-file');
-            if (confirmBtn) {
-                confirmBtn.onclick = function() { FilesModule.updateName(fileId); };
+            var btn = document.getElementById('confirm-edit-file');
+            if (btn) {
+                btn.onclick = function() {
+                    var newName = document.getElementById('edit-file-name').value.trim();
+                    if (newName) FilesModule.updateFileName(fileId, newName);
+                };
             }
         }, 100);
     },
     
-    updateName: async function(fileId) {
-        var newNameInput = document.getElementById('edit-file-name');
-        if (!newNameInput) {
-            window.Utils.showNotification('Error: formulario no encontrado', 'error');
-            return;
-        }
-        
-        var newName = newNameInput.value.trim();
-        if (!newName) {
-            window.Utils.showNotification('⚠️ Ingresa un nombre para el archivo', 'error');
-            return;
-        }
-        
+    updateFileName: async function(fileId, newName) {
         try {
             await window.EducaSupabase.Files.updateName(fileId, newName);
             window.UIModule.closeModal();
-            window.Utils.showNotification('✅ Nombre actualizado correctamente');
-            
-            if (typeof window.refreshSubject === 'function') {
-                await window.refreshSubject();
-            }
+            window.Utils.showNotification('✅ Nombre actualizado');
+            if (typeof window.refreshSubject === 'function') await window.refreshSubject();
         } catch (error) {
-            console.error('Error al actualizar:', error);
-            window.Utils.showNotification('❌ Error al actualizar nombre', 'error');
+            console.error(error);
+            window.Utils.showNotification('❌ Error al actualizar', 'error');
         }
     },
     
     delete: function(fileId, fileUrl) {
-        window.UIModule.showConfirm('⚠️ ¿Eliminar este archivo? Esta acción no se puede deshacer.', async function() {
+        window.UIModule.showConfirm('⚠️ ¿Eliminar este archivo?', async function() {
             try {
                 await window.EducaSupabase.Files.delete(fileId, fileUrl);
-                window.Utils.showNotification('🗑️ Archivo eliminado correctamente');
-                
-                if (typeof window.refreshSubject === 'function') {
-                    await window.refreshSubject();
-                }
+                window.Utils.showNotification('🗑️ Eliminado');
+                if (typeof window.refreshSubject === 'function') await window.refreshSubject();
             } catch (error) {
-                console.error('Error al eliminar:', error);
-                window.Utils.showNotification('❌ Error al eliminar archivo', 'error');
+                console.error(error);
+                window.Utils.showNotification('❌ Error al eliminar', 'error');
             }
         });
-    },
-    
-    download: function(url, filename) {
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.target = '_blank';
-        a.click();
-        a.remove();
     }
 };
 

@@ -1,6 +1,6 @@
-# Educa+ - Plataforma Educativa Premium para 4ESO
+# Web 4 ESO - Plataforma Educativa para 4ESO
 
-Una plataforma web educativa moderna y profesional para organizar material academico de 4ESO, con un diseno inspirado en SaaS premium como Notion, Linear y Vercel.
+Una plataforma web educativa moderna para organizar el material académico de 4ESO.
 
 ## Caracteristicas
 
@@ -25,7 +25,7 @@ Una plataforma web educativa moderna y profesional para organizar material acade
 ## Estructura del Proyecto
 
 ```
-educaplus/
+web4eso/
 ├── index.html              # Pagina principal (redireccion)
 ├── login.html              # Pagina de login/registro
 ├── dashboard.html          # Dashboard principal
