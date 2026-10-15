@@ -26,11 +26,15 @@ jobs:
                    js/pages/study/resourcesModel.js \
                    js/pages/study/dashboard.js \
                    js/pages/study/resources.js \
+                   sw.js \
                    tools/validate-resources.js \
                    tools/validate-activities.js; do
             echo "node --check $f"
             node --check "$f"
           done
+
+      - name: Manifest de la PWA (JSON válido)
+        run: node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest', 'utf8')); console.log('manifest.webmanifest OK')"
 
       - name: Validador de recursos (sin pérdidas ni duplicados)
         run: node tools/validate-resources.js
