@@ -1,0 +1,245 @@
+/* ============================================
+   TOKENS DE DISEÑO — Web 4ESO
+   Capa única de verdad para color, tipografía,
+   forma y movimiento. Se carga antes de study.css.
+   Paleta, escalas y radios alineados con
+   FormulariosWeb (slate + azul, Inter en cuerpo,
+   48px de toque) + display Fraunces para títulos.
+   ============================================ */
+
+:root {
+    color-scheme: light;
+
+    /* ---------- TIPOGRAFÍA ---------- */
+    /* Fraunces: display con carácter, SOLO títulos grandes (h1–h3).
+       Inter: cuerpo, UI y títulos menores (continuidad FormulariosWeb). */
+    --fuente-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --fuente-base: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    --fuente-titulo: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+    --fuente-mono: 'SF Mono', ui-monospace, 'Fira Code', 'Cascadia Code', Consolas, monospace;
+
+    /* Escala fluida (clamp) */
+    --texto-xxs: clamp(0.69rem, 0.66rem + 0.15vw, 0.75rem);
+    --texto-xs: clamp(0.69rem, 0.66rem + 0.15vw, 0.75rem);
+    --texto-sm: clamp(0.8rem, 0.77rem + 0.15vw, 0.875rem);
+    --texto-base: clamp(0.9rem, 0.9rem + 0.1vw, 0.9375rem);
+    --texto-lg: clamp(0.97rem, 0.94rem + 0.2vw, 1rem);
+    --texto-xl: clamp(1.03rem, 0.99rem + 0.25vw, 1.0625rem);
+    --texto-2xl: clamp(1.31rem, 1.24rem + 0.45vw, 1.375rem);
+    --texto-3xl: clamp(1.55rem, 1.47rem + 0.55vw, 1.625rem);
+    --texto-4xl: clamp(1.9rem, 1.78rem + 0.9vw, 2.125rem);
+
+    --peso-normal: 400;
+    --peso-medio: 500;
+    --peso-semi: 600;
+    --peso-fuerte: 700;
+
+    --interlineado-cuerpo: 1.5;
+    --interlineado-titulo: 1.2;
+    --interlineado-display: 1.15;
+    --tracking-titulo: -0.02em;
+    --tracking-display: -0.012em;
+
+    /* ---------- FORMA ---------- */
+    /* Escala 8 / 12 / 16 / 20 / 24 de FormulariosWeb */
+    --radio-s: 8px;
+    --radio-m: 12px;
+    --radio-l: 16px;
+    --radio-xl: 20px;
+    --radio-full: 999px;
+
+    --ancho-max: 1024px;
+    --toque-minimo: 48px;
+    --focus-ring: 3px solid var(--color-acento);
+    --focus-offset: 3px;
+
+    /* ---------- MOVIMIENTO ---------- */
+    --easing-salida: cubic-bezier(0.4, 0, 0.2, 1);
+    --transicion: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    --transicion-lenta: 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    /* ---------- COLOR · TEMA CLARO (por defecto) ---------- */
+    --color-fondo: #f8fafc;
+    --color-nav: rgba(255, 255, 255, 0.94);
+    --color-superficie: #ffffff;
+    --color-superficie-alt: #f1f5f9;
+    --color-superficie-2: #eef2f7;
+
+    --color-borde: #e2e8f0;
+    --color-borde-sutil: #eef2f7;
+    --color-borde-tenue: #f1f5f9;
+    --color-borde-fuerte: #cbd5e1;
+
+    --color-texto: #0f172a;
+    --color-texto-2: #475569;
+    --color-texto-3: #5e6d84;
+    --color-texto-inverso: #ffffff;
+
+    --color-acento: #2563eb;
+    --color-acento-hover: #1d4ed8;
+    --color-acento-suave: #1d4ed8;
+    /* Acento usado COMO texto (enlaces, insignias): AA sobre fondos claros */
+    --color-acento-texto: #1d4ed8;
+    --color-acento-contraste: #ffffff;
+
+    --color-acento-04: rgba(37, 99, 235, 0.04);
+    --color-acento-06: rgba(37, 99, 235, 0.06);
+    --color-acento-08: rgba(37, 99, 235, 0.08);
+    --color-acento-10: rgba(37, 99, 235, 0.1);
+    --color-acento-15: rgba(37, 99, 235, 0.15);
+    --color-acento-25: rgba(37, 99, 235, 0.25);
+    --color-acento-30: rgba(37, 99, 235, 0.3);
+
+    --color-exito: #15803d;
+    --color-exito-04: rgba(21, 128, 61, 0.05);
+    --color-exito-15: rgba(21, 128, 61, 0.14);
+    --color-exito-20: rgba(21, 128, 61, 0.24);
+
+    --color-aviso: #b45309;
+    --color-aviso-04: rgba(180, 83, 9, 0.05);
+    --color-aviso-20: rgba(180, 83, 9, 0.24);
+    --color-peligro: #b91c1c;
+}
+
+/* ============================================
+   TEMA OSCURO (elección explícita)
+   ============================================ */
+:root[data-theme='dark'] {
+    color-scheme: dark;
+
+    --color-fondo: #0b1220;
+    --color-nav: rgba(11, 18, 32, 0.94);
+    --color-superficie: #111a2c;
+    --color-superficie-alt: #16213a;
+    --color-superficie-2: #1b2740;
+
+    --color-borde: #243149;
+    --color-borde-sutil: #1b2740;
+    --color-borde-tenue: #16213a;
+    --color-borde-fuerte: #33475f;
+
+    --color-texto: #e6edf7;
+    --color-texto-2: #94a3b8;
+    --color-texto-3: #7a8aa3;
+    --color-texto-inverso: #0b1220;
+
+    --color-acento: #3b82f6;
+    --color-acento-hover: #60a5fa;
+    --color-acento-suave: #60a5fa;
+    --color-acento-texto: #60a5fa;
+    --color-acento-contraste: #0c0a09;
+
+    --color-acento-04: rgba(59, 130, 246, 0.06);
+    --color-acento-06: rgba(59, 130, 246, 0.08);
+    --color-acento-08: rgba(59, 130, 246, 0.12);
+    --color-acento-10: rgba(59, 130, 246, 0.14);
+    --color-acento-15: rgba(59, 130, 246, 0.2);
+    --color-acento-25: rgba(59, 130, 246, 0.32);
+    --color-acento-30: rgba(59, 130, 246, 0.4);
+
+    --color-exito: #4ade80;
+    --color-exito-04: rgba(34, 197, 94, 0.07);
+    --color-exito-15: rgba(34, 197, 94, 0.14);
+    --color-exito-20: rgba(34, 197, 94, 0.26);
+
+    --color-aviso: #fbbf24;
+    --color-aviso-04: rgba(245, 158, 11, 0.07);
+    --color-aviso-20: rgba(245, 158, 11, 0.26);
+    --color-peligro: #f87171;
+}
+
+/* ============================================
+   TEMA OSCURO · sin JavaScript
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        color-scheme: dark;
+
+        --color-fondo: #0b1220;
+        --color-nav: rgba(11, 18, 32, 0.94);
+        --color-superficie: #111a2c;
+        --color-superficie-alt: #16213a;
+        --color-superficie-2: #1b2740;
+
+        --color-borde: #243149;
+        --color-borde-sutil: #1b2740;
+        --color-borde-tenue: #16213a;
+        --color-borde-fuerte: #33475f;
+
+        --color-texto: #e6edf7;
+        --color-texto-2: #94a3b8;
+        --color-texto-3: #7a8aa3;
+        --color-texto-inverso: #0b1220;
+
+        --color-acento: #3b82f6;
+        --color-acento-hover: #60a5fa;
+        --color-acento-suave: #60a5fa;
+        --color-acento-texto: #60a5fa;
+        --color-acento-contraste: #0c0a09;
+
+        --color-acento-04: rgba(59, 130, 246, 0.06);
+        --color-acento-06: rgba(59, 130, 246, 0.08);
+        --color-acento-08: rgba(59, 130, 246, 0.12);
+        --color-acento-10: rgba(59, 130, 246, 0.14);
+        --color-acento-15: rgba(59, 130, 246, 0.2);
+        --color-acento-25: rgba(59, 130, 246, 0.32);
+        --color-acento-30: rgba(59, 130, 246, 0.4);
+
+        --color-exito: #4ade80;
+        --color-exito-04: rgba(34, 197, 94, 0.07);
+        --color-exito-15: rgba(34, 197, 94, 0.14);
+        --color-exito-20: rgba(34, 197, 94, 0.26);
+
+        --color-aviso: #fbbf24;
+        --color-aviso-04: rgba(245, 158, 11, 0.07);
+        --color-aviso-20: rgba(245, 158, 11, 0.26);
+        --color-peligro: #f87171;
+    }
+}
+
+/* ============================================
+   ALTO CONTRASTE (accesibilidad)
+   ============================================ */
+:root[data-theme='contrast'] {
+    color-scheme: dark;
+
+    --color-fondo: #000000;
+    --color-nav: #000000;
+    --color-superficie: #0a0a0a;
+    --color-superficie-alt: #111111;
+    --color-superficie-2: #171717;
+
+    --color-borde: rgba(255, 255, 255, 0.55);
+    --color-borde-sutil: rgba(255, 255, 255, 0.4);
+    --color-borde-tenue: rgba(255, 255, 255, 0.12);
+    --color-borde-fuerte: #ffffff;
+
+    --color-texto: #ffffff;
+    --color-texto-2: #f2f2f2;
+    --color-texto-3: #d4d4d4;
+    --color-texto-inverso: #000000;
+
+    --color-acento: #60a5fa;
+    --color-acento-hover: #93c5fd;
+    --color-acento-suave: #93c5fd;
+    --color-acento-texto: #93c5fd;
+    --color-acento-contraste: #000000;
+
+    --color-acento-04: rgba(96, 165, 250, 0.08);
+    --color-acento-06: rgba(96, 165, 250, 0.12);
+    --color-acento-08: rgba(96, 165, 250, 0.18);
+    --color-acento-10: rgba(96, 165, 250, 0.22);
+    --color-acento-15: rgba(96, 165, 250, 0.3);
+    --color-acento-25: rgba(96, 165, 250, 0.45);
+    --color-acento-30: rgba(96, 165, 250, 0.5);
+
+    --color-exito: #66ff66;
+    --color-exito-04: rgba(102, 255, 102, 0.08);
+    --color-exito-15: rgba(102, 255, 102, 0.18);
+    --color-exito-20: rgba(102, 255, 102, 0.32);
+
+    --color-aviso: #ffdd66;
+    --color-aviso-04: rgba(255, 221, 102, 0.08);
+    --color-aviso-20: rgba(255, 221, 102, 0.32);
+    --color-peligro: #ff6666;
+}

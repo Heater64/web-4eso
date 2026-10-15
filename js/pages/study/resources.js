@@ -1,287 +1,254 @@
 // js/pages/study/resources.js
-// Sección de Recursos de Estudio
+// Sección de Recursos de Estudio (métodos, IAs, webs y guías).
+// Estas funciones devuelven HTML; el router (dashboard.js) las invoca.
 
-console.log('📄 resources.js cargado');
+function stripLeadingEmoji(text) {
+    return String(text || '').replace(/^[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\s]+/u, '');
+}
 
 // ==========================================
-// RENDER RECURSOS (Vista principal)
+// FILTRO EN VIVO
+// ==========================================
+
+function filterFieldHtml(placeholder) {
+    return [
+        '<div class="resources-filter">',
+            '<label class="sr-only" for="resourceFilter">Filtrar recursos</label>',
+            '<span class="filter-icon" aria-hidden="true">🔎</span>',
+            '<input type="search" id="resourceFilter" placeholder="', esc(placeholder), '" autocomplete="off">',
+            '<span class="filter-count" id="filterCount" aria-live="polite"></span>',
+        '</div>',
+        '<p class="filter-empty" id="filterEmpty" hidden>No hay nada que coincida con ese filtro.</p>'
+    ].join('');
+}
+
+// Oculta/muestra las tarjetas con [data-filter] según el texto escrito.
+// El cotejo usa normalizeText: sin acentos, sin mayúsculas, sin símbolos.
+function setupResourceFilter() {
+    const input = document.getElementById('resourceFilter');
+    if (!input) return;
+
+    const cards = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
+    if (!cards.length) return;
+
+    const countEl = document.getElementById('filterCount');
+    const emptyEl = document.getElementById('filterEmpty');
+
+    input.addEventListener('input', function () {
+        const query = normalizeText(input.value);
+        let visible = 0;
+
+        cards.forEach(function (card) {
+            const haystack = card.getAttribute('data-filter') || '';
+            const match = query === '' || haystack.indexOf(query) > -1;
+            card.hidden = !match;
+            if (match) visible++;
+        });
+
+        if (countEl) {
+            countEl.textContent = query === '' ? '' : visible + ' de ' + cards.length;
+        }
+        if (emptyEl) {
+            emptyEl.hidden = !(query !== '' && visible === 0);
+        }
+    });
+}
+
+// ==========================================
+// VISTA PRINCIPAL
 // ==========================================
 
 function renderResources() {
-    console.log('🔄 renderResources() ejecutado');
-    
-    const container = document.getElementById('studyContent');
-    if (!container) return;
-    
     const categories = getResourceCategories();
-    
-    let html = `
-        <div class="study-page active">
-            <!-- Header -->
-            <div class="resources-header">
-                <div class="resources-header-content">
-                    <span class="resources-header-icon">🎓</span>
-                    <div>
-                        <h1>Recursos de Estudio</h1>
-                        <p>Métodos, herramientas y guías para aprender mejor</p>
-                    </div>
-                </div>
-                <div class="resources-tip">
-                    <span>💡</span>
-                    <span id="randomTip">${getRandomTip()}</span>
-                </div>
-            </div>
 
-            <!-- Categorías -->
-            <div class="study-grid">
-                ${categories.map(c => `
-                    <div class="resource-category-card" onclick="renderCategory('${c.id}')">
-                        <div class="resource-category-icon" style="background:${c.color}20; color:${c.color}">
-                            ${c.icon}
-                        </div>
-                        <h3>${c.name}</h3>
-                        <p>${c.description}</p>
-                        <div class="resource-category-meta">
-                            <span>📄 ${c.items.length} recursos</span>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
+    const cards = categories.map(function (category) {
+        const haystack = normalizeText([
+            stripLeadingEmoji(category.name),
+            category.description,
+            category.items.map(function (item) {
+                return item.title + ' ' + item.description;
+            }).join(' ')
+        ].join(' '));
+
+        return [
+            '<a class="resource-category-card" href="#/recursos/', esc(category.id), '" data-filter="', esc(haystack), '">',
+                '<span class="resource-category-icon" style="background:', esc(category.color), '20; color:', esc(category.color), '" aria-hidden="true">',
+                    category.icon,
+                '</span>',
+                '<span class="resource-category-name">', esc(stripLeadingEmoji(category.name)), '</span>',
+                '<span class="resource-category-desc">', esc(category.description), '</span>',
+                '<span class="resource-category-meta">', pluralize(category.items.length, 'recurso', 'recursos'), '</span>',
+            '</a>'
+        ].join('');
+    }).join('');
+
+    return [
+        '<div class="study-page active">',
+            '<header class="page-head page-head--inline">',
+                '<span class="page-head-icon" style="background: var(--color-acento-15); color: var(--color-acento)" aria-hidden="true">🎓</span>',
+                '<div>',
+                    '<h1>Recursos de Estudio</h1>',
+                    '<p class="page-lede">Métodos, herramientas y guías para aprender mejor.</p>',
+                '</div>',
+            '</header>',
+            '<div class="resources-tip">',
+                '<span aria-hidden="true">💡</span>',
+                '<span id="randomTip">', esc(getRandomTip()), '</span>',
+                '<button type="button" class="tip-refresh" aria-label="Mostrar otro consejo">Otro consejo</button>',
+            '</div>',
+            filterFieldHtml('Filtrar categorías y recursos...'),
+            '<div class="study-grid">', cards, '</div>',
+        '</div>'
+    ].join('');
 }
 
 // ==========================================
-// RENDER CATEGORÍA
+// CATEGORÍA
 // ==========================================
 
 function renderCategory(categoryId) {
-    console.log('🔄 renderCategory()', categoryId);
-    
-    const container = document.getElementById('studyContent');
-    if (!container) return;
-    
     const category = getCategory(categoryId);
+
     if (!category) {
-        container.innerHTML = `
-            <div class="study-page active">
-                <div class="study-empty">
-                    <span>🔍</span>
-                    <h3>Categoría no encontrada</h3>
-                    <button class="btn-study" onclick="renderResources()">Volver a recursos</button>
-                </div>
-            </div>
-        `;
-        return;
+        return notFoundHtml('Categoría no encontrada', 'Esta categoría de recursos no existe.');
     }
-    
-    let html = `
-        <div class="study-page active">
-            <!-- Back -->
-            <button class="btn-back" onclick="renderResources()">← Volver a recursos</button>
-            
-            <!-- Category Header -->
-            <div class="category-header" style="border-color:${category.color}40;">
-                <div class="category-header-icon" style="background:${category.color}20; color:${category.color}">
-                    ${category.icon}
-                </div>
-                <div>
-                    <h1>${category.name}</h1>
-                    <p>${category.description}</p>
-                </div>
-            </div>
-            
-            <!-- Items Grid -->
-            <div class="study-grid">
-                ${category.items.map(item => `
-                    <div class="resource-item-card" onclick="renderResourceItem('${category.id}', '${item.id}')">
-                        <h3>${item.title}</h3>
-                        <p>${item.description}</p>
-                        <div class="resource-item-meta">
-                            <span>🔍 Ver detalles</span>
-                            <span class="arrow">→</span>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
+
+    const items = category.items.map(function (item) {
+        const haystack = normalizeText([item.title, item.description].join(' '));
+        return [
+            '<a class="resource-item-card" href="#/recursos/', esc(category.id), '/', esc(item.id), '" data-filter="', esc(haystack), '">',
+                '<span class="resource-item-name">', esc(item.title), '</span>',
+                '<span class="resource-item-desc">', esc(item.description), '</span>',
+                '<span class="resource-item-meta">Ver detalles <span class="arrow" aria-hidden="true">→</span></span>',
+            '</a>'
+        ].join('');
+    }).join('');
+
+    return [
+        '<div class="study-page active">',
+            renderBreadcrumbs([
+                HOME_CRUMB,
+                { label: 'Recursos', route: '#/recursos' },
+                { label: stripLeadingEmoji(category.name) }
+            ]),
+            '<header class="page-head page-head--inline">',
+                '<span class="page-head-icon" style="background:', esc(category.color), '20; color:', esc(category.color), '" aria-hidden="true">', category.icon, '</span>',
+                '<div>',
+                    '<h1>', esc(stripLeadingEmoji(category.name)), '</h1>',
+                    '<p class="page-lede">', esc(category.description), '</p>',
+                    '<p class="page-summary">', pluralize(category.items.length, 'recurso', 'recursos'), '</p>',
+                '</div>',
+            '</header>',
+            filterFieldHtml('Filtrar en ' + stripLeadingEmoji(category.name) + '...'),
+            '<div class="study-grid">', items, '</div>',
+        '</div>'
+    ].join('');
 }
 
 // ==========================================
-// RENDER RECURSO INDIVIDUAL
+// RECURSO INDIVIDUAL
 // ==========================================
+
+function resourceSection(title, bodyHtml) {
+    if (!bodyHtml) return '';
+    return [
+        '<section class="resource-section">',
+            '<h2>', esc(title), '</h2>',
+            bodyHtml,
+        '</section>'
+    ].join('');
+}
 
 function renderResourceItem(categoryId, itemId) {
-    console.log('🔄 renderResourceItem()', categoryId, itemId);
-    
-    const container = document.getElementById('studyContent');
-    if (!container) return;
-    
     const category = getCategory(categoryId);
     const item = getResourceItem(categoryId, itemId);
-    
+
     if (!category || !item) {
-        container.innerHTML = `
-            <div class="study-page active">
-                <div class="study-empty">
-                    <span>🔍</span>
-                    <h3>Recurso no encontrado</h3>
-                    <button class="btn-study" onclick="renderResources()">Volver a recursos</button>
-                </div>
-            </div>
-        `;
-        return;
+        return notFoundHtml('Recurso no encontrado', 'Este recurso no existe o ha cambiado de nombre.');
     }
-    
-    let html = `
-        <div class="study-page active">
-            <!-- Back -->
-            <button class="btn-back" onclick="renderCategory('${categoryId}')">← Volver a ${category.name}</button>
-            
-            <!-- Resource Content -->
-            <div class="resource-detail">
-                <div class="resource-detail-header" style="border-color:${category.color}40;">
-                    <span class="resource-detail-icon" style="background:${category.color}20; color:${category.color}">
-                        ${category.icon}
-                    </span>
-                    <div>
-                        <span class="resource-detail-badge" style="background:${category.color}20; color:${category.color}">
-                            ${category.name}
-                        </span>
-                        <h1>${item.title}</h1>
-                        <p>${item.description}</p>
-                    </div>
-                </div>
-    `;
-    
-    // Steps (si existen)
-    if (item.steps && item.steps.length > 0) {
-        html += `
-            <div class="resource-section">
-                <h3>📋 Pasos a seguir</h3>
-                <ul class="resource-list">
-                    ${item.steps.map((step, index) => `
-                        <li>
-                            <span class="step-number">${index + 1}</span>
-                            ${step}
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
+
+    let html = [
+        '<div class="study-page active">',
+            renderBreadcrumbs([
+                HOME_CRUMB,
+                { label: 'Recursos', route: '#/recursos' },
+                { label: stripLeadingEmoji(category.name), route: '#/recursos/' + category.id },
+                { label: item.title }
+            ]),
+            '<header class="page-head page-head--inline">',
+                '<span class="page-head-icon" style="background:', esc(category.color), '20; color:', esc(category.color), '" aria-hidden="true">', category.icon, '</span>',
+                '<div>',
+                    '<p class="page-summary">', esc(stripLeadingEmoji(category.name)), '</p>',
+                    '<h1>', esc(item.title), '</h1>',
+                    '<p class="page-lede">', esc(item.description), '</p>',
+                '</div>',
+            '</header>'
+    ].join('');
+
+    if (item.steps && item.steps.length) {
+        html += resourceSection('Pasos a seguir', [
+            '<ol class="resource-list">',
+                item.steps.map(function (step) {
+                    return '<li>' + esc(step) + '</li>';
+                }).join(''),
+            '</ol>'
+        ].join(''));
     }
-    
-    // Tips (si existe)
+
     if (item.tips) {
-        html += `
-            <div class="resource-section resource-tip">
-                <h3>💡 Consejos</h3>
-                <p>${item.tips}</p>
-            </div>
-        `;
+        html += resourceSection('Consejo', '<p class="resource-note">' + esc(item.tips) + '</p>');
     }
-    
-    // Features (si existen)
-    if (item.features && item.features.length > 0) {
-        html += `
-            <div class="resource-section">
-                <h3>✨ Características</h3>
-                <ul class="resource-features">
-                    ${item.features.map(f => `
-                        <li>${f}</li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
+
+    if (item.features && item.features.length) {
+        html += resourceSection('Características', [
+            '<ul class="resource-features">',
+                item.features.map(function (feature) {
+                    return '<li>' + esc(feature) + '</li>';
+                }).join(''),
+            '</ul>'
+        ].join(''));
     }
-    
-    // How to use (si existe)
+
     if (item.howToUse) {
-        html += `
-            <div class="resource-section">
-                <h3>🚀 Cómo usarlo</h3>
-                <p>${item.howToUse}</p>
-            </div>
-        `;
+        html += resourceSection('Cómo usarlo', '<p>' + esc(item.howToUse) + '</p>');
     }
-    
-    // Best for (si existe)
+
     if (item.bestFor) {
-        html += `
-            <div class="resource-section resource-bestfor">
-                <h3>🎯 Para qué es ideal</h3>
-                <p>${item.bestFor}</p>
-            </div>
-        `;
+        html += resourceSection('Para qué es ideal', '<p>' + esc(item.bestFor) + '</p>');
     }
-    
-    // URL (si existe)
+
+    if (item.sections && item.sections.length) {
+        html += resourceSection('Contenido de la guía', [
+            '<ul class="resource-features">',
+                item.sections.map(function (section) {
+                    return '<li>' + esc(section) + '</li>';
+                }).join(''),
+            '</ul>'
+        ].join(''));
+    }
+
     if (item.url) {
-        html += `
-            <div class="resource-section">
-                <h3>🔗 Web</h3>
-                <a href="https://${item.url}" target="_blank" class="resource-link">
-                    ${item.url} → 
-                </a>
-            </div>
-        `;
+        html += resourceSection('Web', [
+            '<a class="btn-study" href="https://', esc(item.url), '" target="_blank" rel="noopener noreferrer">',
+                esc(item.url), ' <span aria-hidden="true">&#8599;</span>',
+            '</a>'
+        ].join(''));
     }
-    
-    // Sections (para guías)
-    if (item.sections && item.sections.length > 0) {
-        html += `
-            <div class="resource-section">
-                <h3>📋 Contenido de la guía</h3>
-                <ul class="resource-features">
-                    ${item.sections.map(s => `
-                        <li>${s}</li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
-    }
-    
-    // NotebookLM Integration
-    html += `
-                <div class="resource-section resource-notebooklm">
-                    <h3>🤖 ¿Quieres saber más?</h3>
-                    <p>
-                        Sube este recurso a <strong>NotebookLM</strong> (notebooklm.google.com) 
-                        junto con tus apuntes y haz preguntas específicas sobre el tema.
-                    </p>
-                    <div class="notebooklm-tips">
-                        <span>📤 Sube tus apuntes</span>
-                        <span>❓ Haz preguntas</span>
-                        <span>📝 Obtén resúmenes</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
+
+    html += [
+        '<p class="resource-footnote">',
+            '¿Te queda alguna duda? Sube este recurso a ',
+            '<a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer">NotebookLM</a>',
+            ' junto con tus apuntes y pregúntale sobre el tema.',
+        '</p>',
+        '</div>'
+    ].join('');
+
+    return html;
 }
 
 // ==========================================
-// BUSCADOR DE RECURSOS
-// ==========================================
-
-function searchResourcesGlobal(query) {
-    if (!query || query.trim() === '') {
-        return [];
-    }
-    
-    const results = searchResources(query);
-    return results;
-}
-
-// ==========================================
-// ACTUALIZAR TIP ALEATORIO
+// CONSEJO ALEATORIO
 // ==========================================
 
 function refreshRandomTip() {
@@ -291,9 +258,6 @@ function refreshRandomTip() {
     }
 }
 
-// Cambiar tip cada 10 segundos
-setInterval(refreshRandomTip, 10000);
-
 // ==========================================
 // EXPORTAR
 // ==========================================
@@ -301,5 +265,5 @@ setInterval(refreshRandomTip, 10000);
 window.renderResources = renderResources;
 window.renderCategory = renderCategory;
 window.renderResourceItem = renderResourceItem;
-window.searchResourcesGlobal = searchResourcesGlobal;
 window.refreshRandomTip = refreshRandomTip;
+window.setupResourceFilter = setupResourceFilter;
