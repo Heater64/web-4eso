@@ -5,6 +5,24 @@
 // cada vista tiene URL propia, se puede compartir, y el botón atrás del
 // navegador funciona. Los enlaces se generan como <a href>, con lo que son
 // accesibles con teclado y se pueden abrir en otra pestaña.
+//
+// Estructura del archivo (una región por responsabilidad, en orden):
+//   TEMA                  oscuro / claro / alto contraste (estado: localStorage)
+//   RUTAS                 hash -> parseRoute(); la URL es el estado de navegación
+//   BREADCRUMBS           migas compartidas por todas las páginas
+//   CONTEO PARA TARJETAS  countsMetaList(): «N archivos · N recursos»
+//   PÁGINA: INICIO        dashboardHtml() + tarjetas de asignatura
+//   CONTINUAR DONDE ESTABAS  último tema visitado (estado: localStorage)
+//   PÁGINA: ASIGNATURA    lista de temas con numeración real del programa
+//   PÁGINA: TEMA          hero + columnas + navegación entre temas; el
+//                         contenido lo pinta resourcesModel (renderTopicSection)
+//   PÁGINA: BÚSQUEDA      resultados (el índice vive en studyData/resourcesData)
+//   RENDER PRINCIPAL      renderRoute(): único punto que escribe #studyContent
+//   BUSCADOR / EVENTOS / INICIO
+//
+// Dependencias: esc/pluralize/countTopicItems/buildTopicSections/
+// renderTopicSection (resourcesModel.js) y las vistas de Recursos
+// (resources.js), invocadas por renderRoute.
 
 // ==========================================
 // TEMA (oscuro / claro / alto contraste)
@@ -155,6 +173,20 @@ const HOME_CRUMB = { label: 'Inicio', route: '#/' };
 const SUBJECTS_CRUMB = { label: 'Asignaturas', route: '#/asignaturas' };
 
 // ==========================================
+// CONTEO PARA LAS TARJETAS
+// ==========================================
+
+// «N archivos · N recursos» a partir del recuento del modelo; lo que es 0
+// no aparece. El texto alternativo (p. ej. «Contenido pendiente de
+// publicar») lo añade cada página sobre esta lista.
+function countsMetaList(counts) {
+    const meta = [];
+    if (counts.files) meta.push(pluralize(counts.files, 'archivo', 'archivos'));
+    if (counts.extras) meta.push(pluralize(counts.extras, 'recurso', 'recursos'));
+    return meta;
+}
+
+// ==========================================
 // PÁGINA: INICIO / DIRECTORIO DE ASIGNATURAS
 // ==========================================
 
@@ -176,9 +208,9 @@ function subjectCardHtml(subject) {
     ].join('');
 }
 
-function dashboardHtml(mode) {
-    const subjects = getSubjects();
-
+// Fila de estadísticas del home: cifras grandes sobre el material ya
+// publicado (mismo recuento que usa el modelo: sin marcadores pendientes).
+function subjectStatsHtml(subjects) {
     let totalTopics = 0;
     let totalMaterials = 0;
     subjects.forEach(function (subject) {
@@ -189,13 +221,13 @@ function dashboardHtml(mode) {
         });
     });
 
-    // Fila de estadísticas: cifra grande + etiqueta
     const stats = [
         { value: subjects.length, one: 'asignatura', many: 'asignaturas' },
         { value: totalTopics, one: 'tema', many: 'temas' },
         { value: totalMaterials, one: 'material', many: 'materiales' }
     ];
-    const statsHtml = '<div class="page-stats" aria-label="Resumen del material publicado">' + stats.map(function (stat) {
+
+    return '<div class="page-stats" aria-label="Resumen del material publicado">' + stats.map(function (stat) {
         return [
             '<span class="stat">',
                 '<strong class="stat-value">', stat.value, '</strong>',
@@ -203,14 +235,18 @@ function dashboardHtml(mode) {
             '</span>'
         ].join('');
     }).join('') + '</div>';
+}
 
+function dashboardHtml(mode) {
+    const subjects = getSubjects();
     const focusOnly = mode === 'subjects';
 
     return [
         '<div class="study-page active">',
             '<header class="page-head">',
-                '<h1>Mis Asignaturas</h1>',                focusOnly ? '<p class="page-lede">Todo el material publicado, asignatura por asignatura.</p>' : '',
-                statsHtml,
+                '<h1>Mis Asignaturas</h1>',
+                focusOnly ? '<p class="page-lede">Todo el material publicado, asignatura por asignatura.</p>' : '',
+                subjectStatsHtml(subjects),
             '</header>',
             resumeCardHtml(),
             '<div class="study-grid" id="asignaturasGrid">',
@@ -262,9 +298,7 @@ function resumeCardHtml() {
     if (!last) return '';
 
     const counts = countTopicItems(last.topic);
-    const meta = [last.subject.name];
-    if (counts.files) meta.push(pluralize(counts.files, 'archivo', 'archivos'));
-    if (counts.extras) meta.push(pluralize(counts.extras, 'recurso', 'recursos'));
+    const meta = [last.subject.name].concat(countsMetaList(counts));
 
     return [
         '<a class="resume-card" href="#/asignaturas/', esc(last.subject.id), '/', esc(last.topic.id), '">',
@@ -292,9 +326,7 @@ function topicNumber(topic, index) {
 
 function topicRowHtml(subject, topic, index) {
     const counts = countTopicItems(topic);
-    const meta = [];
-    if (counts.files) meta.push(pluralize(counts.files, 'archivo', 'archivos'));
-    if (counts.extras) meta.push(pluralize(counts.extras, 'recurso', 'recursos'));
+    const meta = countsMetaList(counts);
     if (!meta.length) meta.push('Contenido pendiente de publicar');
 
     return [
@@ -346,9 +378,7 @@ function renderSubject(subjectId) {
 
 function topicIntroHtml(topic, subject) {
     const counts = countTopicItems(topic);
-    const meta = [];
-    if (counts.files) meta.push(pluralize(counts.files, 'archivo', 'archivos'));
-    if (counts.extras) meta.push(pluralize(counts.extras, 'recurso', 'recursos'));
+    const meta = countsMetaList(counts);
 
     return [
         '<div class="topic-hero">',
@@ -388,33 +418,6 @@ function topicNavHtml(subject, topic) {
     ].join('');
 }
 
-// Una sola sección compartida por columna principal y aside. El recuento
-// solo incluye recursos publicados: los marcadores «Próximamente» no se
-// cuentan y, si no queda nada publicado, la insignia no se muestra.
-function topicSectionHtml(topic, section) {
-    const headingId = 'seccion-' + topic.id + '-' + section.id;
-    const rows = section.items.map(function (item) {
-        return item.kind === 'separator' ? renderSeparator(item) : renderResourceRow(item);
-    }).join('');
-
-    const count = section.items.filter(function (item) {
-        return item.kind === 'item' && item.available;
-    }).length;
-
-    return [
-        '<section class="res-section res-section--', section.weight, '" aria-labelledby="', headingId, '">',
-            '<header class="res-section-head">',
-                '<div>',
-                    '<h2 id="', headingId, '">', esc(section.title), '</h2>',
-                    section.hint ? '<p class="res-section-hint">' + esc(section.hint) + '</p>' : '',
-                '</div>',
-                count ? '<span class="res-count">' + pluralize(count, 'recurso', 'recursos') + '</span>' : '',
-            '</header>',
-            '<div class="file-list">', rows, '</div>',
-        '</section>'
-    ].join('');
-}
-
 function renderTopic(subjectId, topicId) {
     const subject = getSubject(subjectId);
     const topic = subject && subject.topics.find(function (item) { return item.id === topicId; });
@@ -432,13 +435,13 @@ function renderTopic(subjectId, topicId) {
     const practiceSections = allSections.filter(function (s) { return s.weight === 'practice'; });
 
     const studyHtml = studySections.map(function (section) {
-        return topicSectionHtml(topic, section);
+        return renderTopicSection(topic, section);
     }).join('');
 
     const activities = renderActivities(topic);
 
     const practiceHtml = practiceSections.map(function (section) {
-        return topicSectionHtml(topic, section);
+        return renderTopicSection(topic, section);
     }).join('');
 
     const empty = (!allSections.length && !activities)
