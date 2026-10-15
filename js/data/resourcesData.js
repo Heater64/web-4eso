@@ -7,7 +7,7 @@ const resourcesData = {
             id: 'metodos',
             name: '📚 Métodos de Estudio',
             icon: '📖',
-            color: '#6366f1',
+            color: '#2563EB',
             description: 'Técnicas y estrategias comprobadas para estudiar de forma más eficiente y retener información.',
             items: [
                 {

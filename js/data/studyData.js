@@ -174,8 +174,8 @@ const studyData = {
             id: 'matematicas',
             name: 'Matemáticas',
             icon: '📐',
-            color: '#6366f1',
-            description: '',
+            color: '#2563EB',
+            description: 'Números, álgebra, geometría y funciones: apuntes, ejercicios y solucionarios por tema.',
             searchTerms: ['matematicas', 'mates', 'mate', 'matemáticas', 'math', 'mat'],
             topics: [
                 {
@@ -193,22 +193,22 @@ const studyData = {
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Introducción' },
-                        { title: '*Video 1* Que son los numeros Reales', url: 'https://www.youtube.com/watch?v=wmLsSNsDEtU&time_continue=50&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Faules.edu.gva.es%2F' },
+                        { title: 'Video 1: Qué son los números reales', url: 'https://www.youtube.com/watch?v=wmLsSNsDEtU&time_continue=50&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Faules.edu.gva.es%2F' },
                         { type: 'separator', label: 'Ampliación' },
-                        { title: '*Video 2* Que son los numeros Reales', url: 'https://www.youtube.com/watch?v=wmLsSNsDEtU&time_continue=50&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Faules.edu.gva.es%2F' },
+                        { title: 'Video 2: Qué son los números reales', url: 'https://www.youtube.com/watch?v=wmLsSNsDEtU&time_continue=50&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Faules.edu.gva.es%2F' },
                         { type: 'separator', label: 'intervalos' },
-                        { title: '*imagen* Resumen de Intervalos', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783519666/resum_intervalos_d93e8u.png' },
-                        { title: '*Video* Intervalos', url: 'https://www.youtube.com/watch?v=ukBwDoQY8XQ&time_continue=8&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Faules.edu.gva.es%2F' },
+                        { title: 'imagen: Resumen de Intervalos', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783519666/resum_intervalos_d93e8u.png' },
+                        { title: 'Video: Intervalos', url: 'https://www.youtube.com/watch?v=ukBwDoQY8XQ&time_continue=8&source_ve_path=NzY3NTg&embeds_referring_euri=https%3A%2F%2Faules.edu.gva.es%2F' },
                         { type: 'separator', label: 'Raíces y radicales' },
-                        { title: '*imagen* Resum de les propietats de Raices y Radicales', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783519964/image_1_m8wldu.png' },
-                        { title: '*Video* Operaciones con radicales 01 - Multiplicación', url: 'https://www.youtube.com/watch?v=oQRf4lSIfY4' },
-                        { title: '*Video* Operaciones con radicales 02 - Extraer factores', url: 'https://www.youtube.com/watch?v=n4LBiSxHv94' },
-                        { title: '*Video* Operaciones con Radicales 03 - Racionalizar', url: 'https://www.youtube.com/watch?v=KTdBezXCjk0' },
-                        { title: '*Video* Operaciones con radicales 04 - Suma', url: 'https://www.youtube.com/watch?v=eeY42p7kLhA' },
+                        { title: 'imagen: Resum de les propietats de Raices y Radicales', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783519964/image_1_m8wldu.png' },
+                        { title: 'Video: Operaciones con radicales 01 - Multiplicación', url: 'https://www.youtube.com/watch?v=oQRf4lSIfY4' },
+                        { title: 'Video: Operaciones con radicales 02 - Extraer factores', url: 'https://www.youtube.com/watch?v=n4LBiSxHv94' },
+                        { title: 'Video: Operaciones con radicales 03 - Racionalizar', url: 'https://www.youtube.com/watch?v=KTdBezXCjk0' },
+                        { title: 'Video: Operaciones con radicales 04 - Suma', url: 'https://www.youtube.com/watch?v=eeY42p7kLhA' },
                         { type: 'separator', label: 'logaritmos' },
-                        { title: '*Video* Logaritmos', url: 'https://www.youtube.com/watch?v=bDSBctt3Zv4' },
+                        { title: 'Video: Logaritmos', url: 'https://www.youtube.com/watch?v=bDSBctt3Zv4' },
                         { type: 'separator', label: 'Ampliación' },
-                        { title: '*Video* Suma y resta de logaritmos', url: 'https://www.youtube.com/watch?v=1ssmDU6h12M' },
+                        { title: 'Video: Suma y resta de logaritmos', url: 'https://www.youtube.com/watch?v=1ssmDU6h12M' },
                                     ]
                 },
                 {
@@ -220,28 +220,28 @@ const studyData = {
                         { type: 'separator', label: 'Resumen' },
                         { name: 'Apuntes', url: '#' },
                         { type: 'separator', label: 'Ejercicios' },
-                        { name: 'Fitxa identitats notables i factoritzacio (amb solucions)', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783521319/ficha-18-identidades-notables-y-factorizacion_e6xtre.pdf' },
+                        { name: 'Fitxa identitats notables i factorització (amb solucions)', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783521319/ficha-18-identidades-notables-y-factorizacion_e6xtre.pdf' },
                         { name: 'Ejercicios resueltos operaciones con fracciones algebraicas', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783522405/EJERCICIOS_RESUELTOS_DE_OPERACIONES_CON_FRACCIONES_ALGEBRAICAS_qgydbq.pdf' },
                         { type: 'separator', label: 'Solucionario' },
                         { name: 'Solucionari Llibre Vicens Vives Tema 2', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783522406/Solucionari_Llibre_VV_Tema2_Matematicas_etkaqc.pdf' },
                                         ],
                     recommendations: [
                         { type: 'separator', label: 'División de Polinomios' },
-                        { title: '*Video* División de Polinomios (a partir del minuto 2:02)', url: 'https://www.youtube.com/watch?v=bEgOof8VMxs' },
+                        { title: 'Video: División de Polinomios (a partir del minuto 2:02)', url: 'https://www.youtube.com/watch?v=bEgOof8VMxs' },
                         { type: 'separator', label: 'Teorema del Residuo' },
-                        { title: '*Video* Aplicacions del Teorema del Residu', url: 'https://www.youtube.com/watch?v=LTDXp8okBdk' },
+                        { title: 'Video: Aplicacions del Teorema del Residu', url: 'https://www.youtube.com/watch?v=LTDXp8okBdk' },
                         { type: 'separator', label: 'Factorización de Polinomios 2DO GRADO' },
-                        { title: '*Video* Factorització de polinomis de grau 2', url: 'https://www.youtube.com/watch?v=bSyIDUf_K1k' },
+                        { title: 'Video: Factorització de polinomis de grau 2', url: 'https://www.youtube.com/watch?v=bSyIDUf_K1k' },
                         { type: 'separator', label: 'Factorización de Polinomios con Ruffini' },
-                        { title: '*Video* Factorització de polinomis amb Ruffini', url: 'https://www.youtube.com/watch?v=Kn15S7w4IA8' },
+                        { title: 'Video: Factorització de polinomis amb Ruffini', url: 'https://www.youtube.com/watch?v=Kn15S7w4IA8' },
                         { type: 'separator', label: 'SIMPLIFICACIÓN DE FRACCIONES ALGEBRAICAS' },
-                        { title: '*Video* Simplificació de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=Uk3f_2I5y7w' },
+                        { title: 'Video: Simplificació de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=Uk3f_2I5y7w' },
                         { type: 'separator', label: 'Suma y Resta de Fracciones Algebraicas' },
-                        { title: '*Video* Suma i resta de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=SakGoz9HMEs' },
+                        { title: 'Video: Suma i resta de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=SakGoz9HMEs' },
                         { type: 'separator', label: 'PRODUCTO Y COCIENTE DE FRACCIONES ALGEBRAICAS' },
-                        { title: '*Video* Producte de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=5zeBJ80al30' },
+                        { title: 'Video: Producte de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=5zeBJ80al30' },
                         { type: 'separator', label: 'QUOCIENTE DE FRACCIONES ALGEBRAICAS' },
-                        { title: '*Video* Quocient de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=VMupuwYPDjA' },
+                        { title: 'Video: Quocient de fraccions algebraiques', url: 'https://www.youtube.com/watch?v=VMupuwYPDjA' },
                     ]
                 },
                 {
@@ -253,27 +253,27 @@ const studyData = {
                         { type: 'separator', label: 'RESUMEN' },
                         { name: 'Apuntes', url: '#' },
                         { type: 'separator', label: 'EJERCICIOS' },
-                        { name: ' EJERCICIOS de ECUACIONES y SISTEMAS', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783522716/ecuaciones_y_sistemas_swqo6i.pdf' },
+                        { name: 'Ejercicios de ecuaciones y sistemas', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783522716/ecuaciones_y_sistemas_swqo6i.pdf' },
                         { name: 'Equacions per a repasar', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783523151/TREBALL_EQUACIONS_bexrsv.pdf' },
                         { type: 'separator', label: 'SOLUCIONARIO' },
                         { name: 'Solucionari Llibre Vicens Vives Tema 3', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783523108/Solucionari_Llibre_VV_Tema3_Matematicas_rv5crl.pdf' },
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Introducción' },
-                        { title: '*Video* Equacions, polinomis i altres termes:', url: 'https://www.youtube.com/watch?v=D2jWlKcMem0' },
+                        { title: 'Video: Equacions, polinomis i altres termes', url: 'https://www.youtube.com/watch?v=D2jWlKcMem0' },
                         { type: 'separator', label: 'Equacions de 2n grau' },
-                        { title: '*Video* Completes', url: 'https://www.youtube.com/watch?v=tmw23jKbGnM' },
-                        { title: '*Video* Incompletes', url: 'https://www.youtube.com/watch?v=L9lAfMBFcdg' },
+                        { title: 'Video: Completes', url: 'https://www.youtube.com/watch?v=tmw23jKbGnM' },
+                        { title: 'Video: Incompletes', url: 'https://www.youtube.com/watch?v=L9lAfMBFcdg' },
                         { type: 'separator', label: 'Equacions biquadrades' },
-                        { title: '*Video* Equacions biquadrades (només exponents parells: 4, 2, 0)', url: 'https://www.youtube.com/watch?v=TxJYjFhJK1w' },
+                        { title: 'Video: Equacions biquadrades (només exponents parells: 4, 2, 0)', url: 'https://www.youtube.com/watch?v=TxJYjFhJK1w' },
                         { type: 'separator', label: 'Equacions racionals' },
-                        { title: '*Video* Equacions racionals (amb x al denominador)', url: 'https://www.youtube.com/watch?v=QU5h_Ex7dhk' },
+                        { title: 'Video: Equacions racionals (amb x al denominador)', url: 'https://www.youtube.com/watch?v=QU5h_Ex7dhk' },
                         { type: 'separator', label: 'Equacions IRRACIONALS' },
-                        { title: '*Video* Equacions irracionals (amb radicals)', url: 'https://www.youtube.com/watch?v=0kImG9PkGO0' },
+                        { title: 'Video: Equacions irracionals (amb radicals)', url: 'https://www.youtube.com/watch?v=0kImG9PkGO0' },
                         { type: 'separator', label: 'Equacions EXPONENCIALS' },
-                        { title: '*Video* Equacions exponencials', url: 'https://www.youtube.com/watch?v=xxp7O2M3dDA' },
+                        { title: 'Video: Equacions exponencials', url: 'https://www.youtube.com/watch?v=xxp7O2M3dDA' },
                         { type: 'separator', label: 'Equacions LOGARITMIQUES' },
-                        { title: '*Video* Equacions logarítmiques', url: 'https://www.youtube.com/watch?v=z5WDNFfSifo' },
+                        { title: 'Video: Equacions logarítmiques', url: 'https://www.youtube.com/watch?v=z5WDNFfSifo' },
                     ]
                 },
                 {
@@ -291,23 +291,23 @@ const studyData = {
                         
                     ],
                     recommendations: [
-                        { type: 'separator', label: '-----SISTEMES DE ECUACIONS LINEALS-----' },
-                        { type: 'separator', label: 'Mètode de substitucióN' },
-                        { title: '*Video* SISTEMES DE ECUACIONS LINEALS Mètode de substitució', url: 'https://www.youtube.com/watch?v=RRWTj18BSBE' },
+                        { type: 'separator', label: 'Sistemes de ecuacions lineals' },
+                        { type: 'separator', label: 'Mètode de substitució' },
+                        { title: 'Video: Sistemes de ecuacions lineals: mètode de substitució', url: 'https://www.youtube.com/watch?v=RRWTj18BSBE' },
                         { type: 'separator', label: 'MÉTODO DE IGUALACIÓN'},
-                        { title: '*Video* Mètode de igualació', url: 'https://www.youtube.com/watch?v=dTYAQHl43xM' },
+                        { title: 'Video: Mètode de igualació', url: 'https://www.youtube.com/watch?v=dTYAQHl43xM' },
                         { type: 'separator', label: 'Mètode de REDUCCIÓN' },
-                        { title: '*Video* Mètode de reducció', url: 'https://www.youtube.com/watch?v=ojKpCQmxmUA' },
+                        { title: 'Video: Mètode de reducció', url: 'https://www.youtube.com/watch?v=ojKpCQmxmUA' },
                         { type: 'separator', label: 'Mètode GRÁFICO'},
-                        { title: '*Video* Mètode gràfic', url: 'https://www.youtube.com/watch?v=ZWFIxwcHTKY' },
-                        { type: 'separator', label: '-----SISTEMAS DE ECUANES NO LINEALES-----'},
-                        { title: '*Video* SISTEMES DE EQUACIONS NO LINEALS', url: 'https://www.youtube.com/watch?v=uVzCg8sOhmI' },
-                        { type: 'separator', label: 'SISTEMA DE ECUACIONES LOGARITMICAS'},
-                        { title: '*Video* SISTEMES DEEQUACIONS LOGARÍTMIQUES', url: 'https://www.youtube.com/watch?v=r4ZPj5rdlAI' },
+                        { title: 'Video: Mètode gràfic', url: 'https://www.youtube.com/watch?v=ZWFIxwcHTKY' },
+                        { type: 'separator', label: 'Sistemas de ecuaciones no lineales'},
+                        { title: "Video: Sistemes d'equacions no lineals", url: 'https://www.youtube.com/watch?v=uVzCg8sOhmI' },
+                        { type: 'separator', label: 'SISTEMA DE ECUACIONES LOGARÍTMICAS'},
+                        { title: "Video: Sistemes d'equacions logarítmiques", url: 'https://www.youtube.com/watch?v=r4ZPj5rdlAI' },
                         { type: 'separator', label: 'INECUACIONES CON UNA INCÓGNITA'},
-                        { title: '*Video* INEQUACIONS AMB UNA INCÒGNITA', url: 'https://www.youtube.com/watch?v=6cVczQWNtqk' },
+                        { title: 'Video: Inequacions amb una incògnita', url: 'https://www.youtube.com/watch?v=6cVczQWNtqk' },
                         { type: 'separator', label: 'SISTEMA DE ECUACIONES CON UNA INCOGNITA'},
-                        { title: '*Video* SISTEMES DE INEQUACIONS AMB UNA INCÒGNITA', url: 'https://www.youtube.com/watch?v=3I4D2aQ5L1I' },
+                        { title: "Video: Sistemes d'inequacions amb una incògnita", url: 'https://www.youtube.com/watch?v=3I4D2aQ5L1I' },
                     ]
                 },
                 {
@@ -325,13 +325,13 @@ const studyData = {
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Introducción' },
-                        { title: '*Video* Trigonometría: Introducción', url: 'https://www.youtube.com/watch?v=x_65e-wVTeg' },
-                        { type: 'separator', label: 'RAZONES TRIGONOMETRICAS'},
-                        { title: '*Video* Raons trigonomètriques: nocions bàsiques', url: 'https://www.youtube.com/watch?v=Xjf9Aahm28g' },
-                        { title: '*Video* Gato meme', url: 'https://www.youtube.com/watch?v=sgvAbaNlXvA' }, 
-                        { type: 'separator', label: 'RESOLUCION DE PROBLEMAS'},
-                        { title: '*Video* Calculo de la altura de un edifici, coneguts els angles de observación', url: 'https://www.youtube.com/watch?v=t7lYIDv2Voc' },
-                        { title: '*Video* Calculo de un objecte elevat entre dos punts, des dels quals se observa:', url: 'https://www.youtube.com/watch?v=XJ2mOyPtfos' },
+                        { title: 'Video: Trigonometría: Introducción', url: 'https://www.youtube.com/watch?v=x_65e-wVTeg' },
+                        { type: 'separator', label: 'RAZONES TRIGONOMÉTRICAS'},
+                        { title: 'Video: Raons trigonomètriques: nocions bàsiques', url: 'https://www.youtube.com/watch?v=Xjf9Aahm28g' },
+                        { title: 'Video: Gato meme', url: 'https://www.youtube.com/watch?v=sgvAbaNlXvA' }, 
+                        { type: 'separator', label: 'RESOLUCIÓN DE PROBLEMAS'},
+                        { title: "Video: Cálculo de la altura d'un edifici, coneguts els angles d'observació", url: 'https://www.youtube.com/watch?v=t7lYIDv2Voc' },
+                        { title: "Video: Cálculo d'un objecte elevat entre dos punts, des dels quals s'observa", url: 'https://www.youtube.com/watch?v=XJ2mOyPtfos' },
 
                     ]
                 },
@@ -348,19 +348,19 @@ const studyData = {
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Introducción' },
-                        { title: '*Video* Geometría Analítica: Introducción', url: 'https://www.youtube.com/watch?v=il61wi97yzo' },
+                        { title: 'Video: Geometría Analítica: Introducción', url: 'https://www.youtube.com/watch?v=il61wi97yzo' },
                         { type: 'separator', label: 'VECTORES'},
-                        { title: '*Video* Operacions amb vectors', url: 'https://www.youtube.com/watch?v=sAIlbzRejMA' },
-                        { title: '*Video* Punt mig i vectors paral·lels', url: 'https://www.youtube.com/watch?v=BH2Vf7JV4pI' },
+                        { title: 'Video: Operacions amb vectors', url: 'https://www.youtube.com/watch?v=sAIlbzRejMA' },
+                        { title: 'Video: Punt mig i vectors paral·lels', url: 'https://www.youtube.com/watch?v=BH2Vf7JV4pI' },
                         { type: 'separator', label: 'ECUACIONES DE LA RECTA'},
-                        { title: '*Video* Equacions de la recta 1', url: 'https://www.youtube.com/watch?v=dTvEo9us32g' },
-                        { title: '*Video* Ecuacions de la recta 2', url: 'https://www.youtube.com/watch?v=ojtTWTovGGw' },
-                        { title: '*Video* Ecuacions de la recta 3', url: 'https://www.youtube.com/watch?v=9wOkJ1EAd6s' },
+                        { title: 'Video: Equacions de la recta 1', url: 'https://www.youtube.com/watch?v=dTvEo9us32g' },
+                        { title: 'Video: Ecuacions de la recta 2', url: 'https://www.youtube.com/watch?v=ojtTWTovGGw' },
+                        { title: 'Video: Ecuacions de la recta 3', url: 'https://www.youtube.com/watch?v=9wOkJ1EAd6s' },
                     ]
                 },
                 {
                     id: 'mates-t8',
-                    title: 'Tema 8 - FUNCIONES',
+                    title: 'Tema 8 - Funciones',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -376,8 +376,8 @@ const studyData = {
                         { type: 'separator', label: 'INTRODUCCIÓN' },
                         { title: 'Funciones', url: 'https://www.youtube.com/watch?v=3Ir3JMWIjbQ' },
                         { type: 'separator', label: 'Monotonía' },
-                        { title: 'Monotonia: Intervals de creixement i decreixement: ', url: 'https://www.youtube.com/watch?v=-eHSOoPkPuI' },
-                        { title: 'Extrems duna funció: màxims i mínims relatius i absoluts ', url: 'https://www.youtube.com/watch?v=RDsb-QaqoE8' },
+                        { title: 'Monotonia: Intervals de creixement i decreixement', url: 'https://www.youtube.com/watch?v=-eHSOoPkPuI' },
+                        { title: "Extrems d'una funció: màxims i mínims relatius i absoluts", url: 'https://www.youtube.com/watch?v=RDsb-QaqoE8' },
                         { title: 'Taxa de Variació Mitjana (TVM)', url: 'https://www.youtube.com/watch?v=h4XeSAFuHUc' },
 
                     ]
@@ -389,13 +389,13 @@ const studyData = {
             name: 'Física',
             icon: '⚛️',
             color: '#f59e0b',
-            description: '',
+            description: 'Cinemática, dinámica y energía con el libro Dossier y problemas resueltos.',
             searchTerms: ['fisica', 'física', 'fis', 'fq'],
             topics: [
                 {
                     id: 'fisica-t0',
                     title: 'Tema 0',
-                    description: 'Libro Dosier completo',
+                    description: 'Libro Dossier completo',
                     searchTerms: [''],
                     files: [
                         { type: 'separator', label: 'Libro FiQ - 4ESO' },
@@ -405,7 +405,7 @@ const studyData = {
                 },
                 {
                     id: 'fisica-t1',
-                    title: 'Tema 1 - KINEMATICKS',
+                    title: 'Tema 1 - Kinematics',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -420,7 +420,7 @@ const studyData = {
                 },
                 {
                     id: 'fisica-t2',
-                    title: 'Tema 2 - DYNAMICS',
+                    title: 'Tema 2 - Dynamics',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -455,7 +455,7 @@ const studyData = {
             name: 'Química',
             icon: '🧪',
             color: '#8b5cf6',
-            description: '',
+            description: 'Formulación, nomenclatura y reacciones con resúmenes y modelos de examen.',
             searchTerms: ['quimica', 'química', 'quim', 'q'],
 
             topics: [
@@ -468,20 +468,20 @@ const studyData = {
                         { type: 'separator', label: 'Resumen' },
                         { name: 'Tema Completo', url: 'https://drive.google.com/file/d/1zADdwPjuXa21am_5lNhuHuSJbQRKkIXe/view?usp=sharing' },
                         { name: 'Resumen de clase', url: 'https://drive.google.com/file/d/1tNjK1HKanePYbLe854xOiY_tw9kW2R3f/view?usp=sharing' },
-                        { name: 'Resum Formulació i Nomenclatura Compostos BINARIS', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538427/Resum_formulaci%C3%B3_binaris_4tESO_2_eun2k0.pdf' },
-                        { name: 'Resum Formulació i Nomenclatura Compostos TERNARIS', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538430/Resum_formulaci%C3%B3_ternaris_4tESO_2_cwvizx.pdf' },
+                        { name: 'Resum Formulació i Nomenclatura Compostos binaris', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538427/Resum_formulaci%C3%B3_binaris_4tESO_2_eun2k0.pdf' },
+                        { name: 'Resum Formulació i Nomenclatura Compostos ternaris', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538430/Resum_formulaci%C3%B3_ternaris_4tESO_2_cwvizx.pdf' },
                         { type: 'separator', label: 'Tabla de valencias' },
                         { name: 'Tabla de valencias', url: 'https://drive.google.com/file/d/1rg4rssD0UrTWiwfGkkJnLoDSqzVIQ6nn/view?usp=sharing' },
                         { type: 'separator', label: 'Formulación' },
                         { name: 'Compuestos Binarios', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538239/Formulaci%C3%B3_binaris_2_qmxr46.pdf' },
                         { type: 'separator', label: 'Modelo de EXAMEN' },
-                        { name: 'MODELO DE EXAMEN', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538317/examen_formulaci%C3%B3n_inorg%C3%A1nica_1_2_tirkgq.pdf' },
+                        { name: 'Modelo de examen', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538317/examen_formulaci%C3%B3n_inorg%C3%A1nica_1_2_tirkgq.pdf' },
                         
 
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Nomenclatura' },
-                        { title: '*Video*', url: 'https://www.youtube.com/watch?v=iYonC0W2pXI' },
+                        { title: 'Video', url: 'https://www.youtube.com/watch?v=iYonC0W2pXI' },
 
                     ]
                 },
@@ -496,9 +496,9 @@ const studyData = {
                         { type: 'separator', label: 'REPASO DE TERCERO' },
                         { name: 'Ajuste de ecuaciones químicas', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538767/Ej_ajuste_de_ecuaciones_qu%C3%ADmicas_1_ucykkh.pdf' }, 
                         { type: 'separator', label: 'CÁLCULOS DE CANTIDAD DE SUSTANCIA' },
-                        { name: 'cantidad de substancia', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538837/Cantidad_de_sustancia_1_iqjqzz.pdf' },
+                        { name: 'Cantidad de sustancia', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538837/Cantidad_de_sustancia_1_iqjqzz.pdf' },
                         { type: 'separator', label: 'CÁLCULOS ESTEQUIOMÉTRICOS' },
-                        { name: 'calculos estequiometricos', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538839/C%C3%A0lculs_estequim%C3%A8trics_esquema_1_lz9sys.pdf' },
+                        { name: 'Cálculos estequiométricos', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783538839/C%C3%A0lculs_estequim%C3%A8trics_esquema_1_lz9sys.pdf' },
                     ],
                     recommendations: []
                 },
@@ -509,19 +509,19 @@ const studyData = {
             name: 'Biología',
             icon: '🌱',
             color: '#10b981',
-            description: '',
+            description: 'Células, genética, origen de la vida y la Tierra en el universo.',
             searchTerms: ['biologia', 'biología', 'bio', 'bl'],
 
             topics: [
                 {
                     id: 'examenes-biologia',
-                    title: 'Examenes',
+                    title: 'Exámenes',
                     description: '',
                     searchTerms: [''],
                     files: [
                         { name: 'Examen Origen de la vida', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783540486/EX_origen_vida_2_awzoio.pdf' },
                         { name: 'Examen Células', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783540512/EXAMEN_T1_4rt_BIO_2_r0x2nf.pdf' },
-                        { name: 'Problemas De Genetica', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783540546/Problemas_genetica_AULES_2_hjrtzc.pdf' },
+                        { name: 'Problemas de genética', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783540546/Problemas_genetica_AULES_2_hjrtzc.pdf' },
                         { name: 'Guía para solucionar los problemas de genética', url: 'https://res.cloudinary.com/dcsent4fs/image/upload/v1783541218/Guia_problemes_2__compressed_bqwas2.pdf' },
 
                     ],
@@ -551,7 +551,7 @@ const studyData = {
             topics: [
                 {
                     id: 'valenciano-t1',
-                    title: '',
+                    title: 'Tema 1',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -567,12 +567,12 @@ const studyData = {
             name: 'Historia',
             icon: '🌍',
             color: '#3b82f6',
-            description: '',
+            description: 'De la Revolución Francesa a la Guerra Civil: resúmenes, actividades y cuadernos NotebookLM.',
             searchTerms: ['historia', 'hist', 'h'],
             topics: [
                 {
                     id: 'historia-t1',
-                    title: 'Tema 1 - Antiguo Regimen y Revolución Francesa',
+                    title: 'Tema 1 - Antiguo Régimen y Revolución Francesa',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -580,7 +580,7 @@ const studyData = {
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Resumen del tema' },
-                        { title: 'NotebookLM Antiguo resimen y Revolución Francesa', url: 'https://notebooklm.google.com/notebook/3b3fbccd-58fe-4b0f-ba6a-c1bb5948bf64' },
+                        { title: 'NotebookLM Antiguo resumen y Revolución Francesa', url: 'https://notebooklm.google.com/notebook/3b3fbccd-58fe-4b0f-ba6a-c1bb5948bf64' },
                     ]
                 },
                 {
@@ -598,7 +598,7 @@ const studyData = {
                 },
                 {
                     id: 'historia-t3',
-                    title: 'Tema 3 - LIBERALISME I NACIONALISME EL RÈGIM LIBERAL A ESPANYA (1814-1868)',
+                    title: 'Tema 3 - Liberalisme i nacionalisme: el règim liberal a Espanya (1814-1868)',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -612,7 +612,7 @@ const studyData = {
                 },
                 {
                     id: 'historia-t4',
-                    title: 'Tema 4 - ESPANYA A FINALS DEL SEGLE XIX. DEL SEXENNI DEMOCRÀTIC A LA RESTAURACIÓ (1868-1900)',
+                    title: 'Tema 4 - Espanya a finals del segle XIX: del sexenni democràtic a la restauració (1868-1900)',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -621,12 +621,12 @@ const studyData = {
                     ],
                     recommendations: [
                         { type: 'separator', label: 'Resumen del tema' },
-                        { title: 'EL SEXENNI DEMOCRÀTIC A LA RESTAURACIÓ (1868-1900)', url: 'https://notebooklm.google.com/notebook/1df4633d-98e3-42a2-98bc-8a543855c216' },
+                        { title: 'El sexenni democràtic a la restauració (1868-1900)', url: 'https://notebooklm.google.com/notebook/1df4633d-98e3-42a2-98bc-8a543855c216' },
                     ]
                 },
                 {
                     id: 'historia-t5',
-                    title: 'Tema 5 - CRISI DE LA RESTAURACIÓ I SEGONA REPÚBLICA',
+                    title: 'Tema 5 - Crisi de la restauració i segona república',
                     description: '',
                     searchTerms: [''],
                     files: [
@@ -637,7 +637,7 @@ const studyData = {
                 },
                 {
                     id: 'historia-t6',
-                    title: 'Tema 6 - GUERRA CIVIL I FRANQUISME',
+                    title: 'Tema 6 - Guerra civil i franquisme',
                     description: '',
                     searchTerms: [''],
                     files: [
