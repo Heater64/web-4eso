@@ -10,8 +10,20 @@
 //
 // La política del cotejo es de resourcesModel.js: buildFilterHaystack
 // indexa al renderizar y filterMatchesQuery coteja al teclear. Las vistas
-// devuelven HTML; el router (dashboard.js) las invoca, y al final del
-// archivo se publican en window.
+// devuelven HTML; el router (dashboard.js) las invoca vía import/export
+// (este archivo no publica nada en window).
+
+import { normalizeText } from '../../data/studyData.js';
+import { getRandomTip, getResourceCategories, getCategory, getResourceItem } from '../../data/resourcesData.js';
+import {
+    esc,
+    pluralize,
+    buildFilterHaystack,
+    filterMatchesQuery,
+    renderBreadcrumbs,
+    HOME_CRUMB,
+    notFoundHtml
+} from './resourcesModel.js';
 
 function stripLeadingEmoji(text) {
     return String(text || '').replace(/^[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\s]+/u, '');
@@ -36,7 +48,7 @@ function filterFieldHtml(placeholder) {
 // Oculta/muestra las tarjetas con [data-filter] según el texto escrito.
 // El cotejo lo decide el modelo (filterMatchesQuery): sin acentos, sin
 // mayúsculas, sin símbolos y con la consulta vacía se ve todo.
-function setupResourceFilter() {
+export function setupResourceFilter() {
     const input = document.getElementById('resourceFilter');
     if (!input) return;
 
@@ -69,7 +81,7 @@ function setupResourceFilter() {
 // VISTA PRINCIPAL
 // ==========================================
 
-function renderResources() {
+export function renderResources() {
     const categories = getResourceCategories();
 
     const cards = categories.map(function (category) {
@@ -117,7 +129,7 @@ function renderResources() {
 // CATEGORÍA
 // ==========================================
 
-function renderCategory(categoryId) {
+export function renderCategory(categoryId) {
     const category = getCategory(categoryId);
 
     if (!category) {
@@ -170,7 +182,7 @@ function resourceSection(title, bodyHtml) {
     ].join('');
 }
 
-function renderResourceItem(categoryId, itemId) {
+export function renderResourceItem(categoryId, itemId) {
     const category = getCategory(categoryId);
     const item = getResourceItem(categoryId, itemId);
 
@@ -261,20 +273,15 @@ function renderResourceItem(categoryId, itemId) {
 // ==========================================
 // CONSEJO ALEATORIO
 // ==========================================
+//
+// El router importa las tres vistas y el widget directamente (cada una con
+// su `export` en la definición). El consejo se exporta también aunque su
+// botón siga sin listener: cablearlo será un addEventListener contra esta
+// función.
 
-function refreshRandomTip() {
+export function refreshRandomTip() {
     const tipElement = document.getElementById('randomTip');
     if (tipElement) {
         tipElement.textContent = getRandomTip();
     }
 }
-
-// ==========================================
-// EXPORTAR
-// ==========================================
-
-window.renderResources = renderResources;
-window.renderCategory = renderCategory;
-window.renderResourceItem = renderResourceItem;
-window.refreshRandomTip = refreshRandomTip;
-window.setupResourceFilter = setupResourceFilter;

@@ -4,37 +4,17 @@
 // se pueda añadir sin tocar el motor.
 //
 //   node tools/validate-activities.js
+//
+// Carga los módulos ES reales (resourcesModel arrastra a studyData por
+// import); los checks de abajo no cambian.
 
-const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
+import fs from 'node:fs';
+import path from 'node:path';
+import { ACTIVITY_TYPES, renderActivities, isCorrectAnswer, ACTIVITY_STORE } from '../js/pages/study/resourcesModel.js';
 
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(import.meta.dirname, '..');
 
-// --- sandbox mínima: el motor solo necesita window al cargar ---
-const sandbox = {
-    window: {},
-    console: console,
-    document: {
-        querySelector: function () { return null; },
-        querySelectorAll: function () { return []; },
-        addEventListener: function () {}
-    }
-};
-sandbox.window.window = sandbox.window;
-vm.createContext(sandbox);
-
-['js/data/studyData.js', 'js/pages/study/resourcesModel.js'].forEach(function (file) {
-    const code = fs.readFileSync(path.join(root, file), 'utf8');
-    vm.runInContext(code, sandbox, { filename: file });
-});
-
-// const de módulo no se expone al objeto global del contexto: se piden explícitamente
-const api = vm.runInContext('({ ACTIVITY_TYPES, renderActivities, isCorrectAnswer, ACTIVITY_STORE })', sandbox);
-const registro = api.ACTIVITY_TYPES;
-const renderActivities = api.renderActivities;
-const isCorrectAnswer = api.isCorrectAnswer;
-const ACTIVITY_STORE = api.ACTIVITY_STORE;
+const registro = ACTIVITY_TYPES;
 
 const failures = [];
 function check(nombre, condicion, detalle) {

@@ -92,7 +92,7 @@ const searchSynonyms = {
 // FUNCIÓN DE NORMALIZACIÓN DE TEXTO
 // ==========================================
 
-function normalizeText(text) {
+export function normalizeText(text) {
     if (!text) return '';
     return text
         .toLowerCase()
@@ -112,7 +112,7 @@ function normalizeText(text) {
 // FUNCIÓN DE BÚSQUEDA CON SINÓNIMOS
 // ==========================================
 
-function getSearchTerms(query) {
+export function getSearchTerms(query) {
     const normalized = normalizeText(query);
     const words = normalized.split(/\s+/);
     const terms = new Set();
@@ -154,7 +154,7 @@ function getSearchTerms(query) {
     return Array.from(terms);
 }
 
-function flexibleMatch(text, searchTerms) {
+export function flexibleMatch(text, searchTerms) {
     if (!text) return false;
     const normalized = normalizeText(text);
     
@@ -168,7 +168,7 @@ function flexibleMatch(text, searchTerms) {
 // ASIGNATURAS Y SU CONTENIDO
 // ==========================================
 
-const studyData = {
+export const studyData = {
     subjects: [
         {
             id: 'matematicas',
@@ -656,20 +656,20 @@ const studyData = {
 // FUNCIONES DE ACCESO A DATOS
 // ==========================================
 
-function getSubjects() {
+export function getSubjects() {
     return studyData.subjects;
 }
 
-function getSubject(id) {
+export function getSubject(id) {
     return studyData.subjects.find(s => s.id === id);
 }
 
-function getTopics(subjectId) {
+export function getTopics(subjectId) {
     const subject = getSubject(subjectId);
     return subject ? subject.topics : [];
 }
 
-function getFiles(topicId) {
+export function getFiles(topicId) {
     for (const subject of studyData.subjects) {
         for (const topic of subject.topics) {
             if (topic.id === topicId) {
@@ -680,7 +680,7 @@ function getFiles(topicId) {
     return [];
 }
 
-function getRecommendations(topicId) {
+export function getRecommendations(topicId) {
     for (const subject of studyData.subjects) {
         for (const topic of subject.topics) {
             if (topic.id === topicId) {
@@ -695,7 +695,7 @@ function getRecommendations(topicId) {
 // FUNCIÓN DE BÚSQUEDA MEJORADA
 // ==========================================
 
-function searchAll(query) {
+export function searchAll(query) {
     if (!query || query.trim() === '') {
         return { subjects: [], topics: [] };
     }
@@ -807,18 +807,9 @@ function searchAll(query) {
 }
 
 // ==========================================
-// EXPORTAR PARA USO GLOBAL
+// EXPORTAR (módulo ES)
 // ==========================================
-
-window.studyData = studyData;
-window.getSubjects = getSubjects;
-window.getSubject = getSubject;
-window.getTopics = getTopics;
-window.getFiles = getFiles;
-window.getRecommendations = getRecommendations;
-window.searchAll = searchAll;
-window.normalizeText = normalizeText;
-window.getSearchTerms = getSearchTerms;
-window.flexibleMatch = flexibleMatch;
+// La API es la lista de declaraciones con `export` de este archivo; nada se
+// cuelga de window (el router y los datos se enlazan con import/export).
 
 console.log('✅ studyData.js cargado con sistema de búsqueda avanzada');

@@ -3,28 +3,15 @@
 // elemento de los datos originales (js/data/studyData.js).
 //
 // Uso:  node tools/validate-resources.js
+//
+// Carga los módulos ES reales (el mismo código que sirve la web). Los
+// checks de abajo no cambian: solo cambia el mecanismo de carga — import
+// estático en vez de vm.runInContext, que no entiende import/export.
 
-const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
-
-const root = path.join(__dirname, '..');
-
-const context = { window: {}, console };
-vm.createContext(context);
-
-[
-    'js/data/studyData.js',
-    'js/data/resourcesData.js',
-    'js/pages/study/resourcesModel.js'
-].forEach(function (file) {
-    const code = fs.readFileSync(path.join(root, file), 'utf8');
-    vm.runInContext(code, context, { filename: file });
-});
-
-const studyData = context.window.studyData;
-const buildTopicSections = context.buildTopicSections;
-const countTopicItems = context.countTopicItems;
+import { studyData } from '../js/data/studyData.js';
+import { buildTopicSections, countTopicItems } from '../js/pages/study/resourcesModel.js';
+// resourcesData debe poder importarse (errores de orden o dependencias)
+import '../js/data/resourcesData.js';
 
 let failures = 0;
 let totalOriginal = 0;
