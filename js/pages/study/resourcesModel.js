@@ -4,10 +4,11 @@
 // Dueño de: la construcción de secciones (buildTopicSections), el recuento
 // de material publicado (countTopicItems), la política del filtro en vivo
 // (buildFilterHaystack / filterMatchesQuery), las filas y secciones de
-// recursos (renderResourceRow / renderSeparator / renderTopicSection) y el
-// motor de actividades. No decide nada de página: el orden de columnas, los
-// breadcrumbs y las vistas de conjunto viven en dashboard.js; el cableado
-// del widget de filtro, en resources.js.
+// recursos (renderResourceRow / renderSeparator / renderTopicSection), el
+// motor de actividades y las utilidades de página compartidas (esc,
+// pluralize, renderBreadcrumbs, notFoundHtml). El orden de columnas y las
+// vistas de conjunto viven en dashboard.js; el cableado del widget de
+// filtro, en resources.js. Módulo ES: depende solo de studyData.js.
 //
 // ----------------------------------------------------------------------------
 // CÓMO SE RELLENA CADA SECCIÓN (no se inventa contenido):
@@ -27,11 +28,13 @@
 // topic.activities[] -> actividades interactivas (ver esquema en renderActivities)
 // ----------------------------------------------------------------------------
 
+import { normalizeText } from '../../data/studyData.js';
+
 // ==========================================
 // UTILIDADES COMPARTIDAS
 // ==========================================
 
-function esc(value) {
+export function esc(value) {
     return String(value === null || value === undefined ? '' : value)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -40,8 +43,43 @@ function esc(value) {
         .replace(/'/g, '&#39;');
 }
 
-function pluralize(count, singular, pluralForm) {
+export function pluralize(count, singular, pluralForm) {
     return count + ' ' + (count === 1 ? singular : pluralForm);
+}
+
+// ----------------------------------------------
+// BREADCRUMBS Y PÁGINA NO ENCONTRADA (compartidas)
+// Usadas por el dashboard (home/asignatura/tema/búsqueda) y por las vistas
+// de Recursos; viven aquí para que ninguna página dependa del router.
+// ----------------------------------------------
+
+export function renderBreadcrumbs(items) {
+    if (!items || !items.length) return '';
+
+    const parts = items.map(function (item, i) {
+        const isLast = i === items.length - 1;
+        if (isLast || !item.route) {
+            return '<span class="current" aria-current="page">' + esc(item.label) + '</span>';
+        }
+        return '<a href="' + esc(item.route) + '">' + esc(item.label) + '</a>';
+    }).join('<span class="sep" aria-hidden="true">‹</span>');
+
+    return '<nav class="study-breadcrumbs" aria-label="Ruta de navegación">' + parts + '</nav>';
+}
+
+export const HOME_CRUMB = { label: 'Inicio', route: '#/' };
+export const SUBJECTS_CRUMB = { label: 'Asignaturas', route: '#/asignaturas' };
+
+export function notFoundHtml(title, message) {
+    return [
+        '<div class="study-page active">',
+            '<div class="study-empty">',
+                '<h1>', esc(title), '</h1>',
+                '<p>', esc(message), '</p>',
+                '<a class="btn-study" href="#/">Volver al inicio</a>',
+            '</div>',
+        '</div>'
+    ].join('');
 }
 
 // ==========================================
@@ -111,7 +149,7 @@ function classifyEntry(entry, source, groupLabel) {
 
 // Devuelve las secciones con contenido, preservando los separadores originales
 // dentro de cada sección y el orden en que aparecían.
-function buildTopicSections(topic) {
+export function buildTopicSections(topic) {
     const buckets = {};
     TOPIC_BUCKETS.forEach(function (bucket) {
         buckets[bucket.id] = [];
@@ -169,7 +207,7 @@ function buildTopicSections(topic) {
     return sections;
 }
 
-function countTopicItems(topic) {
+export function countTopicItems(topic) {
     let files = 0;
     let extras = 0;
 
@@ -253,7 +291,7 @@ function renderSeparator(item) {
 // no se cuentan y, si no queda nada publicado, la insignia no se muestra —
 // la misma política que countTopicItems. La página (dashboard.js) decide
 // en qué columna va cada sección; aquí solo se pinta la que se le pida.
-function renderTopicSection(topic, section) {
+export function renderTopicSection(topic, section) {
     const headingId = 'seccion-' + topic.id + '-' + section.id;
     const rows = section.items.map(function (item) {
         return item.kind === 'separator' ? renderSeparator(item) : renderResourceRow(item);
@@ -288,11 +326,11 @@ function renderTopicSection(topic, section) {
 // renderizar) y los coteja con filterMatchesQuery (al teclear); el DOM y las
 // etiquetas «N de M» son responsabilidad suya.
 
-function buildFilterHaystack(parts) {
+export function buildFilterHaystack(parts) {
     return normalizeText(parts.filter(Boolean).join(' '));
 }
 
-function filterMatchesQuery(haystack, query) {
+export function filterMatchesQuery(haystack, query) {
     const normalized = normalizeText(query);
     if (!normalized) return true;
     return normalizeText(haystack).indexOf(normalized) > -1;
@@ -344,7 +382,7 @@ function escapeRegex(value) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function isCorrectAnswer(question, given) {
+export function isCorrectAnswer(question, given) {
     const candidate = normalizeAnswer(given);
     if (!candidate) return false;
     // Se parte ANTES de normalizar: normalizeText elimina los símbolos.
@@ -750,7 +788,7 @@ function allQuestions(builder) {
     };
 }
 
-const ACTIVITY_TYPES = {
+export const ACTIVITY_TYPES = {
     'test': {
         label: 'Test autocorregible',
         help: 'Responde a las preguntas y pulsa «Comprobar respuestas»: se corrige cada una y se explica el porqué.',
@@ -838,7 +876,7 @@ function getActivityType(activity) {
     return ACTIVITY_TYPES[activity && activity.type] || null;
 }
 
-const ACTIVITY_STORE = {};
+export const ACTIVITY_STORE = {};
 
 function renderActivity(activity, index, topicId) {
     const type = getActivityType(activity);
@@ -889,7 +927,7 @@ function renderActivity(activity, index, topicId) {
     ].join('');
 }
 
-function renderActivities(topic) {
+export function renderActivities(topic) {
     const activities = topic.activities || [];
     if (!activities.length) return '';
 
@@ -965,7 +1003,7 @@ function resumenHtml(questions, results) {
     return '<h4>Corrección</h4><ol class="act-resumen-lista">', items, '</ol>';
 }
 
-function handleActivitySubmit(event) {
+export function handleActivitySubmit(event) {
     const form = event.target;
     if (!form.classList || !form.classList.contains('act-form')) return;
 
@@ -1073,7 +1111,7 @@ function toggleLabels(button) {
 
 // Manejador único de clics sobre actividades: corrección, soluciones, tarjetas y
 // etiquetas visuales. dashboard.js lo registra una sola vez.
-function handleActivityClick(event) {
+export function handleActivityClick(event) {
     const target = event.target;
     if (!target || !target.closest) return;
 
@@ -1096,6 +1134,3 @@ function handleActivityClick(event) {
     const etiquetas = target.closest('.act-toggle-etiquetas');
     if (etiquetas) { toggleLabels(etiquetas); return; }
 }
-
-// Alias estable: dashboard.js sigue registrando handleActivityReset.
-window.handleActivityReset = handleActivityClick;

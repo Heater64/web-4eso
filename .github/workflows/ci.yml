@@ -14,7 +14,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          # v24: el runtime con el que está verificado localmente; hace falta
+          # la detección de sintaxis ESM de los .js (node --check + import dinámico)
+          node-version: '24'
 
       - name: Sintaxis de los scripts JS
         run: |

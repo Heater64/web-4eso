@@ -73,11 +73,22 @@
     </main>
 
     <!-- ===== SCRIPTS ===== -->
-    <script src="./js/data/studyData.js?v=5"></script>
-    <script src="./js/data/resourcesData.js?v=5"></script>
-    <script src="./js/pages/study/resourcesModel.js?v=5"></script>
-    <script src="./js/pages/study/dashboard.js?v=5"></script>
-    <script src="./js/pages/study/resources.js?v=5"></script>
+    <!-- Módulo ES único: dashboard.js importa el resto (studyData,
+         resourcesData, resourcesModel, resources) y no se publica nada
+         en window. Requiere servir por HTTP (el dev server o Vercel).
+         El mapa de importes añade ?v= a TODOS los módulos desde un solo
+         sitio: al cambiar un JS, subir ?v aquí (tag + mapa). -->
+    <script type="importmap">
+      {
+        "imports": {
+          "./js/data/studyData.js": "./js/data/studyData.js?v=6",
+          "./js/data/resourcesData.js": "./js/data/resourcesData.js?v=6",
+          "./js/pages/study/resourcesModel.js": "./js/pages/study/resourcesModel.js?v=6",
+          "./js/pages/study/resources.js": "./js/pages/study/resources.js?v=6"
+        }
+      }
+    </script>
+    <script type="module" src="./js/pages/study/dashboard.js?v=6"></script>
 
 </body>
 </html>

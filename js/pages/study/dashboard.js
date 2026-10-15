@@ -6,10 +6,13 @@
 // navegador funciona. Los enlaces se generan como <a href>, con lo que son
 // accesibles con teclado y se pueden abrir en otra pestaña.
 //
+// Módulo ES y punto de entrada: index.html carga solo este archivo con
+// type="module" y el grafo de imports resuelve el resto (sin globals).
+//
 // Estructura del archivo (una región por responsabilidad, en orden):
+//   IMPORTS              datos (studyData/resourcesData) + modelo + vistas
 //   TEMA                  oscuro / claro / alto contraste (estado: localStorage)
 //   RUTAS                 hash -> parseRoute(); la URL es el estado de navegación
-//   BREADCRUMBS           migas compartidas por todas las páginas
 //   CONTEO PARA TARJETAS  countsMetaList(): «N archivos · N recursos»
 //   PÁGINA: INICIO        dashboardHtml() + tarjetas de asignatura
 //   CONTINUAR DONDE ESTABAS  último tema visitado (estado: localStorage)
@@ -20,9 +23,26 @@
 //   RENDER PRINCIPAL      renderRoute(): único punto que escribe #studyContent
 //   BUSCADOR / EVENTOS / INICIO
 //
-// Dependencias: esc/pluralize/countTopicItems/buildTopicSections/
-// renderTopicSection (resourcesModel.js) y las vistas de Recursos
-// (resources.js), invocadas por renderRoute.
+// Los breadcrumbs y notFoundHtml son utilidades compartidas que residen en
+// resourcesModel.js, para que ninguna página dependa del router.
+
+import { getSubjects, getSubject, searchAll } from '../../data/studyData.js';
+import { searchResources } from '../../data/resourcesData.js';
+import {
+    esc,
+    pluralize,
+    countTopicItems,
+    buildTopicSections,
+    renderTopicSection,
+    renderActivities,
+    handleActivitySubmit,
+    handleActivityClick,
+    renderBreadcrumbs,
+    HOME_CRUMB,
+    SUBJECTS_CRUMB,
+    notFoundHtml
+} from './resourcesModel.js';
+import { renderResources, renderCategory, renderResourceItem, setupResourceFilter } from './resources.js';
 
 // ==========================================
 // TEMA (oscuro / claro / alto contraste)
@@ -150,27 +170,6 @@ function parseRoute() {
 
     return { name: 'notfound', path: pathPart, query: query };
 }
-
-// ==========================================
-// BREADCRUMBS
-// ==========================================
-
-function renderBreadcrumbs(items) {
-    if (!items || !items.length) return '';
-
-    const parts = items.map(function (item, i) {
-        const isLast = i === items.length - 1;
-        if (isLast || !item.route) {
-            return '<span class="current" aria-current="page">' + esc(item.label) + '</span>';
-        }
-        return '<a href="' + esc(item.route) + '">' + esc(item.label) + '</a>';
-    }).join('<span class="sep" aria-hidden="true">‹</span>');
-
-    return '<nav class="study-breadcrumbs" aria-label="Ruta de navegación">' + parts + '</nav>';
-}
-
-const HOME_CRUMB = { label: 'Inicio', route: '#/' };
-const SUBJECTS_CRUMB = { label: 'Asignaturas', route: '#/asignaturas' };
 
 // ==========================================
 // CONTEO PARA LAS TARJETAS
@@ -509,7 +508,7 @@ function searchResultItemHtml(result) {
 
 function searchViewHtml(query) {
     const subjectResults = searchAll(query);
-    const resourceResults = typeof searchResources === 'function' ? searchResources(query) : [];
+    const resourceResults = searchResources(query);
 
     const results = [
         ...subjectResults.subjects.map(function (r) { return Object.assign({}, r, { badge: 'Asignatura' }); }),
@@ -550,18 +549,6 @@ function searchViewHtml(query) {
             header,
             '<div class="result-list">', results.map(searchResultItemHtml).join(''), '</div>',
             back,
-        '</div>'
-    ].join('');
-}
-
-function notFoundHtml(title, message) {
-    return [
-        '<div class="study-page active">',
-            '<div class="study-empty">',
-                '<h1>', esc(title), '</h1>',
-                '<p>', esc(message), '</p>',
-                '<a class="btn-study" href="#/">Volver al inicio</a>',
-            '</div>',
         '</div>'
     ].join('');
 }
@@ -614,13 +601,13 @@ function renderRoute(options) {
             rememberLastTopic(route.subjectId, route.topicId);
             break;
         case 'resources':
-            html = typeof renderResources === 'function' ? renderResources() : notFoundHtml('Recursos', 'Sección no disponible.');
+            html = renderResources();
             break;
         case 'category':
-            html = typeof renderCategory === 'function' ? renderCategory(route.categoryId) : '';
+            html = renderCategory(route.categoryId);
             break;
         case 'item':
-            html = typeof renderResourceItem === 'function' ? renderResourceItem(route.categoryId, route.itemId) : '';
+            html = renderResourceItem(route.categoryId, route.itemId);
             break;
         case 'search':
             html = searchViewHtml(route.query.q || '');
@@ -633,9 +620,7 @@ function renderRoute(options) {
     syncNav(route.name);
 
     // Filtro en vivo de la sección de Recursos (si la página lo incluye)
-    if (typeof setupResourceFilter === 'function') {
-        setupResourceFilter();
-    }
+    setupResourceFilter();
 
     if (route.name === 'search') {
         const input = document.getElementById('searchInput');
@@ -717,7 +702,7 @@ function setupEventListeners() {
 
     // Corrección y reinicio de actividades interactivas (evento delegado)
     document.addEventListener('submit', handleActivitySubmit);
-    document.addEventListener('click', handleActivityReset);
+    document.addEventListener('click', handleActivityClick);
 
     // El tema por defecto es claro y solo cambia cuando el alumno lo elige
     // con el botón; no se sigue automáticamente el sistema para que la

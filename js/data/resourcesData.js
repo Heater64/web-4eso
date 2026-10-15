@@ -1,5 +1,10 @@
 // js/data/resourcesData.js
 // Recursos de estudio - Métodos, IAs, Webs y más
+// Módulo ES: importa la normalización de studyData.js y exporta sus
+// funciones de acceso (getResourceCategories, getCategory, getResourceItem,
+// getRandomTip, searchResources).
+
+import { normalizeText, getSearchTerms, flexibleMatch } from './studyData.js';
 
 const resourcesData = {
     categories: [
@@ -274,21 +279,21 @@ const resourcesData = {
 // FUNCIONES DE ACCESO A DATOS
 // ==========================================
 
-function getResourceCategories() {
+export function getResourceCategories() {
     return resourcesData.categories;
 }
 
-function getCategory(id) {
+export function getCategory(id) {
     return resourcesData.categories.find(c => c.id === id);
 }
 
-function getResourceItem(categoryId, itemId) {
+export function getResourceItem(categoryId, itemId) {
     const category = getCategory(categoryId);
     if (!category) return null;
     return category.items.find(i => i.id === itemId);
 }
 
-function getRandomTip() {
+export function getRandomTip() {
     const tips = [
         '💡 La técnica Feynman: explica el concepto como si se lo enseñaras a un niño.',
         '⏰ Pomodoro: 25 minutos de estudio, 5 de descanso.',
@@ -308,7 +313,7 @@ function getRandomTip() {
 // FUNCIÓN DE BÚSQUEDA EN RECURSOS
 // ==========================================
 
-function searchResources(query) {
+export function searchResources(query) {
     if (!query || query.trim() === '') {
         return [];
     }
@@ -359,15 +364,6 @@ function searchResources(query) {
     return results;
 }
 
-// ==========================================
-// EXPORTAR
-// ==========================================
-
-window.resourcesData = resourcesData;
-window.getResourceCategories = getResourceCategories;
-window.getCategory = getCategory;
-window.getResourceItem = getResourceItem;
-window.searchResources = searchResources;
-window.getRandomTip = getRandomTip;
+// La API son los export de arriba; no se publica nada en window.
 
 console.log('✅ resourcesData.js cargado con recursos de estudio');
