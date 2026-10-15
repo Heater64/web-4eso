@@ -1,6 +1,17 @@
 // js/pages/study/resources.js
 // Sección de Recursos de Estudio (métodos, IAs, webs y guías).
-// Estas funciones devuelven HTML; el router (dashboard.js) las invoca.
+//
+// Responsabilidades de este archivo:
+//   · Sus tres páginas: directorio (renderResources), categoría
+//     (renderCategory) y detalle (renderResourceItem).
+//   · El widget de filtro en vivo (setupResourceFilter): solo toca el DOM
+//     (input, tarjetas [data-filter], contador «N de M» y estado vacío).
+//   · El consejo aleatorio (refreshRandomTip).
+//
+// La política del cotejo es de resourcesModel.js: buildFilterHaystack
+// indexa al renderizar y filterMatchesQuery coteja al teclear. Las vistas
+// devuelven HTML; el router (dashboard.js) las invoca, y al final del
+// archivo se publican en window.
 
 function stripLeadingEmoji(text) {
     return String(text || '').replace(/^[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\s]+/u, '');
@@ -23,7 +34,8 @@ function filterFieldHtml(placeholder) {
 }
 
 // Oculta/muestra las tarjetas con [data-filter] según el texto escrito.
-// El cotejo usa normalizeText: sin acentos, sin mayúsculas, sin símbolos.
+// El cotejo lo decide el modelo (filterMatchesQuery): sin acentos, sin
+// mayúsculas, sin símbolos y con la consulta vacía se ve todo.
 function setupResourceFilter() {
     const input = document.getElementById('resourceFilter');
     if (!input) return;
@@ -39,8 +51,7 @@ function setupResourceFilter() {
         let visible = 0;
 
         cards.forEach(function (card) {
-            const haystack = card.getAttribute('data-filter') || '';
-            const match = query === '' || haystack.indexOf(query) > -1;
+            const match = filterMatchesQuery(card.getAttribute('data-filter'), query);
             card.hidden = !match;
             if (match) visible++;
         });
@@ -62,13 +73,13 @@ function renderResources() {
     const categories = getResourceCategories();
 
     const cards = categories.map(function (category) {
-        const haystack = normalizeText([
+        const haystack = buildFilterHaystack([
             stripLeadingEmoji(category.name),
             category.description,
             category.items.map(function (item) {
                 return item.title + ' ' + item.description;
             }).join(' ')
-        ].join(' '));
+        ]);
 
         return [
             '<a class="resource-category-card" href="#/recursos/', esc(category.id), '" data-filter="', esc(haystack), '">',
@@ -114,7 +125,7 @@ function renderCategory(categoryId) {
     }
 
     const items = category.items.map(function (item) {
-        const haystack = normalizeText([item.title, item.description].join(' '));
+        const haystack = buildFilterHaystack([item.title, item.description]);
         return [
             '<a class="resource-item-card" href="#/recursos/', esc(category.id), '/', esc(item.id), '" data-filter="', esc(haystack), '">',
                 '<span class="resource-item-name">', esc(item.title), '</span>',

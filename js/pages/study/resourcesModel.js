@@ -1,6 +1,14 @@
 // js/pages/study/resourcesModel.js
 // Modelo de recursos de cada tema + render de actividades interactivas.
 //
+// Dueño de: la construcción de secciones (buildTopicSections), el recuento
+// de material publicado (countTopicItems), la política del filtro en vivo
+// (buildFilterHaystack / filterMatchesQuery), las filas y secciones de
+// recursos (renderResourceRow / renderSeparator / renderTopicSection) y el
+// motor de actividades. No decide nada de página: el orden de columnas, los
+// breadcrumbs y las vistas de conjunto viven en dashboard.js; el cableado
+// del widget de filtro, en resources.js.
+//
 // ----------------------------------------------------------------------------
 // CÓMO SE RELLENA CADA SECCIÓN (no se inventa contenido):
 //
@@ -167,7 +175,7 @@ function countTopicItems(topic) {
 
     // Excluye separadores, marcadores vacíos y pendientes (url '#'): el
     // recuento debe reflejar solo lo que ya se puede abrir, igual que las
-    // insignias de sección (topicSectionHtml / renderTopicSections).
+    // insignias de sección (renderTopicSection).
     function isContent(entry) {
         if (!entry || entry.type === 'separator') return false;
         const name = String(entry.name || entry.title || '').trim();
@@ -240,34 +248,54 @@ function renderSeparator(item) {
     ].join('');
 }
 
-function renderTopicSections(topic) {
-    const sections = buildTopicSections(topic);
-
-    if (!sections.length) return '';
-
-    return sections.map(function (section, index) {
-        const headingId = 'seccion-' + topic.id + '-' + section.id;
-        const rows = section.items.map(function (item) {
-            return item.kind === 'separator' ? renderSeparator(item) : renderResourceRow(item);
-        }).join('');
-
-        const count = section.items.filter(function (item) {
-            return item.kind === 'item' && item.available;
-        }).length;
-
-        return [
-            '<section class="res-section res-section--', section.weight, '" aria-labelledby="', headingId, '">',
-                '<header class="res-section-head">',
-                    '<div>',
-                        '<h2 id="', headingId, '">', esc(section.title), '</h2>',
-                        section.hint ? '<p class="res-section-hint">' + esc(section.hint) + '</p>' : '',
-                    '</div>',
-                    count ? '<span class="res-count">' + pluralize(count, 'recurso', 'recursos') + '</span>' : '',
-                '</header>',
-                '<div class="file-list">', rows, '</div>',
-            '</section>'
-        ].join('');
+// Una sección renderizada: cabecera (título + aviso) + lista de filas. El
+// recuento solo incluye recursos publicados: los marcadores «Próximamente»
+// no se cuentan y, si no queda nada publicado, la insignia no se muestra —
+// la misma política que countTopicItems. La página (dashboard.js) decide
+// en qué columna va cada sección; aquí solo se pinta la que se le pida.
+function renderTopicSection(topic, section) {
+    const headingId = 'seccion-' + topic.id + '-' + section.id;
+    const rows = section.items.map(function (item) {
+        return item.kind === 'separator' ? renderSeparator(item) : renderResourceRow(item);
     }).join('');
+
+    const count = section.items.filter(function (item) {
+        return item.kind === 'item' && item.available;
+    }).length;
+
+    return [
+        '<section class="res-section res-section--', section.weight, '" aria-labelledby="', headingId, '">',
+            '<header class="res-section-head">',
+                '<div>',
+                    '<h2 id="', headingId, '">', esc(section.title), '</h2>',
+                    section.hint ? '<p class="res-section-hint">' + esc(section.hint) + '</p>' : '',
+                '</div>',
+                count ? '<span class="res-count">' + pluralize(count, 'recurso', 'recursos') + '</span>' : '',
+            '</header>',
+            '<div class="file-list">', rows, '</div>',
+        '</section>'
+    ].join('');
+}
+
+// ==========================================
+// POLÍTICA DEL FILTRO EN VIVO
+// ==========================================
+//
+// Un solo sitio decide cómo se coteja el filtro de Recursos: tanto el texto
+// indexado como la consulta pasan por normalizeText (sin acentos, sin
+// mayúsculas, sin símbolos) y una consulta vacía lo muestra todo.
+// resources.js construye los candidatos con buildFilterHaystack (al
+// renderizar) y los coteja con filterMatchesQuery (al teclear); el DOM y las
+// etiquetas «N de M» son responsabilidad suya.
+
+function buildFilterHaystack(parts) {
+    return normalizeText(parts.filter(Boolean).join(' '));
+}
+
+function filterMatchesQuery(haystack, query) {
+    const normalized = normalizeText(query);
+    if (!normalized) return true;
+    return normalizeText(haystack).indexOf(normalized) > -1;
 }
 
 // ==========================================
